@@ -47,7 +47,7 @@ type CNEP struct {
 	AbrangenciaDecisaoJudicial    string `csv:"ABRANGÊNCIA DEFINIDA EM DECISÃO JUDICIAL"`
 	OrgaoSancionador              string `csv:"ÓRGÃO SANCIONADOR"`
 	UfOrgaoSancionador            string `csv:"UF ÓRGÃO SANCIONADOR"`
-	EsferaOrgaoSacnionador        string `csv:"ESFERA ÓRGÃO SANCIONADOR"`
+	EsferaOrgaoSancionador        string `csv:"ESFERA ÓRGÃO SANCIONADOR"`
 	FundamentacaoLegal            string `csv:"FUNDAMENTAÇÃO LEGAL"`
 }
 
