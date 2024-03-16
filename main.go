@@ -9,7 +9,7 @@ import (
 
 func main() {
 
-	services.LoadAllCSVs("")
+	services.LoadAllCSVs("files")
 
 	http.HandleFunc("/search/pep", handlers.SearchHandlerPEP)
 	http.HandleFunc("/search/ceis", handlers.SearchHandlerCEIS)

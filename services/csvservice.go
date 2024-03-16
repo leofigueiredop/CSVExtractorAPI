@@ -43,7 +43,7 @@ func LoadCSVToRedis_PEP(filePath string) {
 			Data_Fim_Carencia:     strings.Trim(record[8], "\""),
 		}
 
-		log.Println("Saving to redis ", pep)
+		log.Println("Saving to redis PEP", pep.CPF)
 		AddToRedis_PEP(&pep)
 	}
 }
@@ -90,7 +90,7 @@ func LoadCSVToRedis_CEIS(filePath string) {
 			FundamentacaoLegal:            strings.Trim(record[20], "\""),
 		}
 
-		log.Println("Saving to redis ", ceis)
+		log.Println("Saving to redis CEIS", ceis.CPFCNPJSancionado)
 		AddToRedis_CEIS(&ceis)
 	}
 }
@@ -98,7 +98,7 @@ func LoadCSVToRedis_CEIS(filePath string) {
 func LoadCSVToRedis_CNEP(filePath string) {
 	file, err := os.Open(filePath)
 	if err != nil {
-		log.Fatalf("Unable to read input file: %s", err)
+		log.Fatalf("Unable to read CNEP input file: %s", err)
 	}
 
 	defer file.Close()
@@ -112,7 +112,7 @@ func LoadCSVToRedis_CNEP(filePath string) {
 			break
 		}
 		if err != nil {
-			log.Fatalf("Error reading CSV file: %s", err)
+			log.Fatalf("Error reading CNEP CSV file: %s", err)
 			return
 		}
 
@@ -141,7 +141,7 @@ func LoadCSVToRedis_CNEP(filePath string) {
 			FundamentacaoLegal:            strings.Trim(record[21], "\""),
 		}
 
-		log.Println("Saving to redis ", cnep)
+		log.Println("Saving to redis CNEP", cnep.CPFCNPJSancionado)
 		AddToRedis_CNEP(&cnep)
 	}
 }
@@ -149,7 +149,7 @@ func LoadCSVToRedis_CNEP(filePath string) {
 func LoadCSVToRedis_AutosInfracaoIbama(filePath string) {
 	file, err := os.Open(filePath)
 	if err != nil {
-		log.Fatalf("Unable to read input file: %s", err)
+		log.Fatalf("Unable to read AutosInfracaoIbama input file: %s", err)
 	}
 
 	defer file.Close()
@@ -163,7 +163,7 @@ func LoadCSVToRedis_AutosInfracaoIbama(filePath string) {
 			break
 		}
 		if err != nil {
-			log.Fatalf("Error reading CSV file: %s", err)
+			log.Fatalf("Error reading AutosInfracaoIbama CSV file: %s", err)
 			return
 		}
 
@@ -212,7 +212,7 @@ func LoadCSVToRedis_AutosInfracaoIbama(filePath string) {
 			UltimaAtualizacaoRelatorio: strings.Trim(record[41], "\""),
 		}
 
-		log.Println("Saving to redis ", autoInfracao)
+		log.Println("Saving to redis AutosInfracaoIbama ", autoInfracao.SeqAutoInfracao)
 		AddToRedis_AutosInfracaoIbama(&autoInfracao)
 	}
 }
@@ -220,7 +220,7 @@ func LoadCSVToRedis_AutosInfracaoIbama(filePath string) {
 func LoadCSVToRedis_AutosInfracaoICMBIO(filePath string) {
 	file, err := os.Open(filePath)
 	if err != nil {
-		log.Fatalf("Unable to read input file: %s", err)
+		log.Fatalf("Unable to read AutosInfracaoICMBIO input file: %s", err)
 	}
 
 	defer file.Close()
@@ -234,7 +234,7 @@ func LoadCSVToRedis_AutosInfracaoICMBIO(filePath string) {
 			break
 		}
 		if err != nil {
-			log.Fatalf("Error reading CSV file: %s", err)
+			log.Fatalf("Error reading AutosInfracaoICMBIO CSV file: %s", err)
 			return
 		}
 
@@ -267,7 +267,7 @@ func LoadCSVToRedis_AutosInfracaoICMBIO(filePath string) {
 			Julgamento:        strings.Trim(record[25], "\""),
 		}
 
-		log.Println("Saving to redis ", autoInfracao)
+		log.Println("Saving to redis AutosInfracaoICMBIO ", autoInfracao.ID)
 		AddToRedis_AutosInfracaoICMBIO(&autoInfracao)
 	}
 }
@@ -275,7 +275,7 @@ func LoadCSVToRedis_AutosInfracaoICMBIO(filePath string) {
 func LoadCSVToRedis_TrabalhoEscravo(filePath string) {
 	file, err := os.Open(filePath)
 	if err != nil {
-		log.Fatalf("Unable to read input file: %s", err)
+		log.Fatalf("Unable to read TrabalhoEscravo input file: %s", err)
 	}
 
 	defer file.Close()
@@ -289,7 +289,7 @@ func LoadCSVToRedis_TrabalhoEscravo(filePath string) {
 			break
 		}
 		if err != nil {
-			log.Fatalf("Error reading CSV file: %s", err)
+			log.Fatalf("Error reading TrabalhoEscravo CSV file: %s", err)
 			return
 		}
 
@@ -306,7 +306,7 @@ func LoadCSVToRedis_TrabalhoEscravo(filePath string) {
 			InclusaoCadastroEmpregadores: strings.Trim(record[9], "\""),
 		}
 
-		log.Println("Saving to redis ", trabalhoEscravo)
+		log.Println("Saving to redis TrabalhoEscravo ", trabalhoEscravo.ID)
 		AddToRedis_TrabalhoEscravo(&trabalhoEscravo)
 	}
 }
@@ -314,7 +314,7 @@ func LoadCSVToRedis_TrabalhoEscravo(filePath string) {
 func LoadCSVToRedis_Suspensaobama(filePath string) {
 	file, err := os.Open(filePath)
 	if err != nil {
-		log.Fatalf("Unable to read input file: %s", err)
+		log.Fatalf("Unable to read Suspensaobama input file: %s", err)
 	}
 
 	defer file.Close()
@@ -328,7 +328,7 @@ func LoadCSVToRedis_Suspensaobama(filePath string) {
 			break
 		}
 		if err != nil {
-			log.Fatalf("Error reading CSV file: %s", err)
+			log.Fatalf("Error reading Suspensaobama CSV file: %s", err)
 			return
 		}
 
@@ -369,7 +369,7 @@ func LoadCSVToRedis_Suspensaobama(filePath string) {
 			ULTIMA_ATUALIZACAO_RELATORIO: strings.Trim(record[33], "\""),
 		}
 
-		log.Println("Saving to redis ", suspensaobama)
+		log.Println("Saving to redis Suspensaobama ", suspensaobama.SEQ_TAD)
 		AddToRedis_Suspensaobama(&suspensaobama)
 	}
 }
@@ -377,7 +377,7 @@ func LoadCSVToRedis_Suspensaobama(filePath string) {
 func LoadCSVToRedis_ApreensaoIbama(filePath string) {
 	file, err := os.Open(filePath)
 	if err != nil {
-		log.Fatalf("Unable to read input file: %s", err)
+		log.Fatalf("Unable to read ApreensaoIbama input file: %s", err)
 	}
 
 	defer file.Close()
@@ -391,7 +391,7 @@ func LoadCSVToRedis_ApreensaoIbama(filePath string) {
 			break
 		}
 		if err != nil {
-			log.Fatalf("Error reading CSV file: %s", err)
+			log.Fatalf("Error reading ApreensaoIbama CSV file: %s", err)
 			return
 		}
 
@@ -431,7 +431,7 @@ func LoadCSVToRedis_ApreensaoIbama(filePath string) {
 			ULTIMA_ATUALIZACAO_RELATORIO: record[32],
 		}
 
-		log.Println("Saving to redis ", apreensaoibama)
+		log.Println("Saving to redis ApreensaoIbama ", apreensaoibama.SEQ_TAD)
 		AddToRedis_ApreensaoIbama(&apreensaoibama)
 	}
 }
@@ -456,13 +456,13 @@ func LoadAllCSVs(dirPath string) {
 					LoadCSVToRedis_CEIS(filePath)
 				case strings.Contains(strings.ToLower(file.Name()), "cnep"):
 					LoadCSVToRedis_CNEP(filePath)
-				case strings.Contains(strings.ToLower(file.Name()), "ibama"):
+				case strings.Contains(strings.ToLower(file.Name()), "infracao_ibama"):
 					LoadCSVToRedis_AutosInfracaoIbama(filePath)
 				case strings.Contains(strings.ToLower(file.Name()), "icmbio"):
 					LoadCSVToRedis_AutosInfracaoICMBIO(filePath)
 				case strings.Contains(strings.ToLower(file.Name()), "escravo"):
 					LoadCSVToRedis_TrabalhoEscravo(filePath)
-				case strings.Contains(strings.ToLower(file.Name()), "suspensaobama"):
+				case strings.Contains(strings.ToLower(file.Name()), "suspensaibama"):
 					LoadCSVToRedis_Suspensaobama(filePath)
 				case strings.Contains(strings.ToLower(file.Name()), "apreensao"):
 					LoadCSVToRedis_ApreensaoIbama(filePath)
