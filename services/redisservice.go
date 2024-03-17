@@ -23,7 +23,7 @@ func AddToRedis_PEP(pep *models.PEP) {
 		return
 	}
 
-	err = rdb.Set(ctx, "PEP:"+pep.CPF, jsonPEP, 0).Err()
+	err = rdb.Set(ctx, "PEP:"+pep.UUID, jsonPEP, 0).Err()
 	if err != nil {
 		log.Printf("Unable to save object to Redis: %v", err)
 	}
@@ -36,7 +36,7 @@ func AddToRedis_CEIS(ceis *models.CEIS) {
 		return
 	}
 
-	err = rdb.Set(ctx, "CEIS:"+ceis.CPFCNPJSancionado, jsonCEIS, 0).Err()
+	err = rdb.Set(ctx, "CEIS:"+ceis.UUID, jsonCEIS, 0).Err()
 	if err != nil {
 		log.Printf("Unable to save object to Redis: %v", err)
 	}
@@ -49,7 +49,7 @@ func AddToRedis_CNEP(cnep *models.CNEP) {
 		return
 	}
 
-	err = rdb.Set(ctx, "CNEP:"+cnep.CPFCNPJSancionado, jsonCNEP, 0).Err()
+	err = rdb.Set(ctx, "CNEP:"+cnep.UUID, jsonCNEP, 0).Err()
 	if err != nil {
 		log.Printf("Unable to save object to Redis: %v", err)
 	}
@@ -62,7 +62,7 @@ func AddToRedis_AutosInfracaoIbama(autoInfracao *models.AutosInfracaoIbama) {
 		return
 	}
 
-	err = rdb.Set(ctx, "AutosInfracaoIbama:"+autoInfracao.SeqAutoInfracao, jsonAutoInfracao, 0).Err()
+	err = rdb.Set(ctx, "AutosInfracaoIbama:"+autoInfracao.UUID, jsonAutoInfracao, 0).Err()
 	if err != nil {
 		log.Printf("Unable to save object to Redis: %v", err)
 	}
@@ -75,7 +75,7 @@ func AddToRedis_AutosInfracaoICMBIO(autoInfracao *models.AutosInfracaoICMBIO) {
 		return
 	}
 
-	err = rdb.Set(ctx, "AutosInfracaoICMBIO:"+autoInfracao.ID, jsonAutoInfracao, 0).Err()
+	err = rdb.Set(ctx, "AutosInfracaoICMBIO:"+autoInfracao.UUID, jsonAutoInfracao, 0).Err()
 	if err != nil {
 		log.Printf("Unable to save object to Redis: %v", err)
 	}
@@ -88,7 +88,7 @@ func AddToRedis_TrabalhoEscravo(trabalhoEscravo *models.TrabalhoEscravo) {
 		return
 	}
 
-	err = rdb.Set(ctx, "TrabalhoEscravo:"+trabalhoEscravo.ID, jsonTrabalhoEscravo, 0).Err()
+	err = rdb.Set(ctx, "TrabalhoEscravo:"+trabalhoEscravo.UUID, jsonTrabalhoEscravo, 0).Err()
 	if err != nil {
 		log.Printf("Unable to save object to Redis: %v", err)
 	}
@@ -101,7 +101,7 @@ func AddToRedis_Suspensaobama(suspensaobama *models.Suspensaobama) {
 		return
 	}
 
-	err = rdb.Set(ctx, "Suspensaobama:"+suspensaobama.SEQ_TAD, jsonSuspensaobama, 0).Err()
+	err = rdb.Set(ctx, "Suspensaobama:"+suspensaobama.UUID, jsonSuspensaobama, 0).Err()
 	if err != nil {
 		log.Printf("Unable to save object to Redis: %v", err)
 	}
@@ -114,7 +114,7 @@ func AddToRedis_ApreensaoIbama(apreensaoibama *models.ApreensaoIbama) {
 		return
 	}
 
-	err = rdb.Set(ctx, "ApreensaoIbama:"+apreensaoibama.SEQ_TAD, jsonApreensao, 0).Err()
+	err = rdb.Set(ctx, "ApreensaoIbama:"+apreensaoibama.UUID, jsonApreensao, 0).Err()
 	if err != nil {
 		log.Printf("Unable to save object to Redis: %v", err)
 	}

@@ -3,6 +3,7 @@ package services
 import (
 	"CSVExtractor/models"
 	"encoding/csv"
+	"github.com/google/uuid"
 	"io"
 	"log"
 	"os"
@@ -32,6 +33,7 @@ func LoadCSVToRedis_PEP(filePath string) {
 		}
 
 		pep := models.PEP{
+			UUID:                  uuid.NewString(),
 			CPF:                   strings.Trim(record[0], "\""),
 			Nome_PEP:              strings.Trim(record[1], "\""),
 			Sigla_Funcao:          strings.Trim(record[2], "\""),
@@ -67,6 +69,7 @@ func LoadCSVToRedis_CEIS(filePath string) {
 		}
 
 		ceis := models.CEIS{
+			UUID:                          uuid.NewString(),
 			Cadastro:                      strings.Trim(record[0], "\""),
 			CodigoSancao:                  strings.Trim(record[1], "\""),
 			TipoPessoa:                    strings.Trim(record[2], "\""),
@@ -117,6 +120,7 @@ func LoadCSVToRedis_CNEP(filePath string) {
 		}
 
 		cnep := models.CNEP{
+			UUID:                          uuid.NewString(),
 			Cadastro:                      strings.Trim(record[0], "\""),
 			CodigoSancao:                  strings.Trim(record[1], "\""),
 			TipoPessoa:                    strings.Trim(record[2], "\""),
@@ -163,57 +167,60 @@ func LoadCSVToRedis_AutosInfracaoIbama(filePath string) {
 			break
 		}
 		if err != nil {
-			log.Fatalf("Error reading AutosInfracaoIbama CSV file: %s", err)
-			return
-		}
+			log.Printf("Error reading AutosInfracaoIbama CSV file: %s", err) // changed here
+			continue                                                         // added here
 
-		autoInfracao := models.AutosInfracaoIbama{
-			SeqAutoInfracao:            strings.Trim(record[0], "\""),
-			NumAutoInfracao:            strings.Trim(record[1], "\""),
-			SerAutoInfracao:            strings.Trim(record[2], "\""),
-			TipoAuto:                   strings.Trim(record[3], "\""),
-			TipoMulta:                  strings.Trim(record[4], "\""),
-			ValAutoInfracao:            strings.Trim(record[5], "\""),
-			PatrimonioApuracao:         strings.Trim(record[6], "\""),
-			GravidadeInfracao:          strings.Trim(record[7], "\""),
-			UnidArrecadacao:            strings.Trim(record[8], "\""),
-			DesAutoInfracao:            strings.Trim(record[9], "\""),
-			DatHoraAutoInfracao:        strings.Trim(record[10], "\""),
-			FormaEntrega:               strings.Trim(record[11], "\""),
-			DatCienciaAutuacao:         strings.Trim(record[12], "\""),
-			CodMunicipio:               strings.Trim(record[13], "\""),
-			Municipio:                  strings.Trim(record[14], "\""),
-			Uf:                         strings.Trim(record[15], "\""),
-			NumProcesso:                strings.Trim(record[16], "\""),
-			CodInfracao:                strings.Trim(record[17], "\""),
-			DesInfracao:                strings.Trim(record[18], "\""),
-			TipoInfracao:               strings.Trim(record[19], "\""),
-			NomeInfrator:               strings.Trim(record[20], "\""),
-			CpfCnpjInfrator:            strings.Trim(record[21], "\""),
-			QtdArea:                    strings.Trim(record[22], "\""),
-			InfracaoArea:               strings.Trim(record[23], "\""),
-			DesOutrosTipoArea:          strings.Trim(record[24], "\""),
-			ClassificacaoArea:          strings.Trim(record[25], "\""),
-			NumLatitudeAuto:            strings.Trim(record[26], "\""),
-			NumLongitudeAuto:           strings.Trim(record[27], "\""),
-			DesLocalInfracao:           strings.Trim(record[28], "\""),
-			NotificacaoVinculada:       strings.Trim(record[29], "\""),
-			AcaoFiscalizatoria:         strings.Trim(record[30], "\""),
-			UnidControle:               strings.Trim(record[31], "\""),
-			TipoAcao:                   strings.Trim(record[32], "\""),
-			Operacao:                   strings.Trim(record[33], "\""),
-			DenunciaSisliv:             strings.Trim(record[34], "\""),
-			OrdemFiscalizacao:          strings.Trim(record[35], "\""),
-			SolicitacaoRecurso:         strings.Trim(record[36], "\""),
-			OperacaoSolRecurso:         strings.Trim(record[37], "\""),
-			DatLancamento:              strings.Trim(record[38], "\""),
-			DatUltAlteracao:            strings.Trim(record[39], "\""),
-			TipoUltAlteracao:           strings.Trim(record[40], "\""),
-			UltimaAtualizacaoRelatorio: strings.Trim(record[41], "\""),
-		}
+		} else {
 
-		log.Println("Saving to redis AutosInfracaoIbama ", autoInfracao.SeqAutoInfracao)
-		AddToRedis_AutosInfracaoIbama(&autoInfracao)
+			autoInfracao := models.AutosInfracaoIbama{
+				UUID:                uuid.NewString(),
+				SeqAutoInfracao:     strings.Trim(record[0], "\""),
+				NumAutoInfracao:     strings.Trim(record[1], "\""),
+				SerAutoInfracao:     strings.Trim(record[2], "\""),
+				TipoAuto:            strings.Trim(record[3], "\""),
+				TipoMulta:           strings.Trim(record[4], "\""),
+				ValAutoInfracao:     strings.Trim(record[5], "\""),
+				PatrimonioApuracao:  strings.Trim(record[6], "\""),
+				GravidadeInfracao:   strings.Trim(record[7], "\""),
+				UnidArrecadacao:     strings.Trim(record[8], "\""),
+				DesAutoInfracao:     strings.Trim(record[9], "\""),
+				DatHoraAutoInfracao: strings.Trim(record[10], "\""),
+				//FormaEntrega:               strings.Trim(record[11], "\""),
+				DatCienciaAutuacao: strings.Trim(record[12], "\""),
+				CodMunicipio:       strings.Trim(record[13], "\""),
+				Municipio:          strings.Trim(record[14], "\""),
+				Uf:                 strings.Trim(record[15], "\""),
+				NumProcesso:        strings.Trim(record[16], "\""),
+				CodInfracao:        strings.Trim(record[17], "\""),
+				DesInfracao:        strings.Trim(record[18], "\""),
+				TipoInfracao:       strings.Trim(record[19], "\""),
+				NomeInfrator:       strings.Trim(record[20], "\""),
+				CpfCnpjInfrator:    strings.Trim(record[21], "\""),
+				//QtdArea:                    strings.Trim(record[22], "\""),
+				//InfracaoArea:               strings.Trim(record[23], "\""),
+				//DesOutrosTipoArea:          strings.Trim(record[24], "\""),
+				//ClassificacaoArea:          strings.Trim(record[25], "\""),
+				//NumLatitudeAuto:            strings.Trim(record[26], "\""),
+				//NumLongitudeAuto:           strings.Trim(record[27], "\""),
+				DesLocalInfracao:     strings.Trim(record[28], "\""),
+				NotificacaoVinculada: strings.Trim(record[29], "\""),
+				AcaoFiscalizatoria:   strings.Trim(record[30], "\""),
+				UnidControle:         strings.Trim(record[31], "\""),
+				TipoAcao:             strings.Trim(record[32], "\""),
+				Operacao:             strings.Trim(record[33], "\""),
+				//DenunciaSisliv:             strings.Trim(record[34], "\""),
+				//OrdemFiscalizacao:          strings.Trim(record[35], "\""),
+				//SolicitacaoRecurso:         strings.Trim(record[36], "\""),
+				//OperacaoSolRecurso:         strings.Trim(record[37], "\""),
+				DatLancamento: strings.Trim(record[38], "\""),
+				//DatUltAlteracao:            strings.Trim(record[39], "\""),
+				//TipoUltAlteracao:           strings.Trim(record[40], "\""),
+				//UltimaAtualizacaoRelatorio: strings.Trim(record[41], "\""),
+			}
+
+			log.Println("Saving to redis AutosInfracaoIbama ", autoInfracao.SeqAutoInfracao)
+			AddToRedis_AutosInfracaoIbama(&autoInfracao)
+		}
 	}
 }
 
@@ -239,6 +246,7 @@ func LoadCSVToRedis_AutosInfracaoICMBIO(filePath string) {
 		}
 
 		autoInfracao := models.AutosInfracaoICMBIO{
+			UUID:              uuid.NewString(),
 			ID:                strings.Trim(record[0], "\""),
 			NumeroAI:          strings.Trim(record[1], "\""),
 			Serie:             strings.Trim(record[2], "\""),
@@ -294,6 +302,7 @@ func LoadCSVToRedis_TrabalhoEscravo(filePath string) {
 		}
 
 		trabalhoEscravo := models.TrabalhoEscravo{
+			UUID:                         uuid.NewString(),
 			ID:                           strings.Trim(record[0], "\""),
 			AnoAcaoFiscal:                strings.Trim(record[1], "\""),
 			UF:                           strings.Trim(record[2], "\""),
@@ -333,40 +342,41 @@ func LoadCSVToRedis_Suspensaobama(filePath string) {
 		}
 
 		suspensaobama := models.Suspensaobama{
-			SEQ_TAD:                      strings.Trim(record[0], "\""),
-			STATUS_FORMULARIO:            strings.Trim(record[1], "\""),
-			SIT_CANCELADO:                strings.Trim(record[2], "\""),
-			NUM_TAD:                      strings.Trim(record[3], "\""),
-			SER_TAD:                      strings.Trim(record[4], "\""),
-			DAT_TAD:                      strings.Trim(record[5], "\""),
-			DAT_IMPRESSAO:                strings.Trim(record[6], "\""),
-			NUM_PESSOA_SUSPENSAO:         strings.Trim(record[7], "\""),
-			NOM_PESSOA_SUSPENSAO:         strings.Trim(record[8], "\""),
-			CPF_CNPJ_PESSOA_SUSPENSAO:    strings.Trim(record[9], "\""),
-			NUM_PROCESSO:                 strings.Trim(record[10], "\""),
-			DES_TAD:                      strings.Trim(record[11], "\""),
-			COD_MUNICIPIO:                strings.Trim(record[12], "\""),
-			NOM_MUNICIPIO:                strings.Trim(record[13], "\""),
-			SIG_UF:                       strings.Trim(record[14], "\""),
-			DES_LOCALIZACAO:              strings.Trim(record[15], "\""),
-			NUM_LONGITUDE_TAD:            strings.Trim(record[16], "\""),
-			NUM_LATITUDE_TAD:             strings.Trim(record[17], "\""),
-			DES_JUSTIFICATIVA:            strings.Trim(record[18], "\""),
-			FORMA_ENTREGA:                strings.Trim(record[19], "\""),
-			UNID_APRESENTACAO:            strings.Trim(record[20], "\""),
-			UNID_CONTROLE:                strings.Trim(record[21], "\""),
-			SEQ_AUTO_INFRACAO:            strings.Trim(record[22], "\""),
-			SEQ_NOTIFICACAO:              strings.Trim(record[23], "\""),
-			SEQ_ACAO_FISCALIZATORIA:      strings.Trim(record[24], "\""),
-			SEQ_ORDEM_FISCALIZACAO:       strings.Trim(record[25], "\""),
-			NUM_ORDEM_FISCALIZACAO:       strings.Trim(record[26], "\""),
-			SEQ_SOLICITACAO_RECURSO:      strings.Trim(record[27], "\""),
-			NUM_SOLICITACAO_RECURSO:      strings.Trim(record[28], "\""),
-			OPERACAO_SOL_RECURSO:         strings.Trim(record[29], "\""),
-			DAT_ALTERACAO:                strings.Trim(record[30], "\""),
-			TIPO_ALTERACAO:               strings.Trim(record[31], "\""),
-			JUSTIFICATIVA_ALTERACAO:      strings.Trim(record[32], "\""),
-			ULTIMA_ATUALIZACAO_RELATORIO: strings.Trim(record[33], "\""),
+			UUID:                      uuid.NewString(),
+			SEQ_TAD:                   strings.Trim(record[0], "\""),
+			STATUS_FORMULARIO:         strings.Trim(record[1], "\""),
+			SIT_CANCELADO:             strings.Trim(record[2], "\""),
+			NUM_TAD:                   strings.Trim(record[3], "\""),
+			SER_TAD:                   strings.Trim(record[4], "\""),
+			DAT_TAD:                   strings.Trim(record[5], "\""),
+			DAT_IMPRESSAO:             strings.Trim(record[6], "\""),
+			NUM_PESSOA_SUSPENSAO:      strings.Trim(record[7], "\""),
+			NOM_PESSOA_SUSPENSAO:      strings.Trim(record[8], "\""),
+			CPF_CNPJ_PESSOA_SUSPENSAO: strings.Trim(record[9], "\""),
+			NUM_PROCESSO:              strings.Trim(record[10], "\""),
+			DES_TAD:                   strings.Trim(record[11], "\""),
+			COD_MUNICIPIO:             strings.Trim(record[12], "\""),
+			NOM_MUNICIPIO:             strings.Trim(record[13], "\""),
+			SIG_UF:                    strings.Trim(record[14], "\""),
+			DES_LOCALIZACAO:           strings.Trim(record[15], "\""),
+			//NUM_LONGITUDE_TAD:            strings.Trim(record[16], "\""),
+			//NUM_LATITUDE_TAD:             strings.Trim(record[17], "\""),
+			DES_JUSTIFICATIVA:       strings.Trim(record[18], "\""),
+			FORMA_ENTREGA:           strings.Trim(record[19], "\""),
+			UNID_APRESENTACAO:       strings.Trim(record[20], "\""),
+			UNID_CONTROLE:           strings.Trim(record[21], "\""),
+			SEQ_AUTO_INFRACAO:       strings.Trim(record[22], "\""),
+			SEQ_NOTIFICACAO:         strings.Trim(record[23], "\""),
+			SEQ_ACAO_FISCALIZATORIA: strings.Trim(record[24], "\""),
+			SEQ_ORDEM_FISCALIZACAO:  strings.Trim(record[25], "\""),
+			NUM_ORDEM_FISCALIZACAO:  strings.Trim(record[26], "\""),
+			//SEQ_SOLICITACAO_RECURSO:      strings.Trim(record[27], "\""),
+			//NUM_SOLICITACAO_RECURSO:      strings.Trim(record[28], "\""),
+			//OPERACAO_SOL_RECURSO:         strings.Trim(record[29], "\""),
+			//DAT_ALTERACAO:                strings.Trim(record[30], "\""),
+			//TIPO_ALTERACAO:               strings.Trim(record[31], "\""),
+			//JUSTIFICATIVA_ALTERACAO:      strings.Trim(record[32], "\""),
+			//ULTIMA_ATUALIZACAO_RELATORIO: strings.Trim(record[33], "\""),
 		}
 
 		log.Println("Saving to redis Suspensaobama ", suspensaobama.SEQ_TAD)
@@ -396,39 +406,40 @@ func LoadCSVToRedis_ApreensaoIbama(filePath string) {
 		}
 
 		apreensaoibama := models.ApreensaoIbama{
-			SEQ_TAD:                      record[0],
-			STATUS_FORMULARIO:            record[1],
-			SIT_CANCELADO:                record[2],
-			NUM_TAD:                      record[3],
-			SER_TAD:                      record[4],
-			DAT_TAD:                      record[5],
-			DAT_IMPRESSAO:                record[6],
-			NUM_PESSOA_SUSPENSAO:         record[7],
-			NOM_PESSOA_SUSPENSAO:         record[8],
-			CPF_CNPJ_PESSOA_SUSPENSAO:    record[9],
-			NUM_PROCESSO:                 record[10],
-			DES_TAD:                      record[11],
-			COD_MUNICIPIO:                record[12],
-			NOM_MUNICIPIO:                record[13],
-			SIG_UF:                       record[14],
-			DES_LOCALIZACAO:              record[15],
-			NUM_LONGITUDE_TAD:            record[16],
-			NUM_LATITUDE_TAD:             record[17],
-			FORMA_ENTREGA:                record[18],
-			UNID_APRESENTACAO:            record[19],
-			UNID_CONTROLE:                record[20],
-			SEQ_AUTO_INFRACAO:            record[21],
-			SEQ_NOTIFICACAO:              record[22],
-			SEQ_ACAO_FISCALIZATORIA:      record[23],
-			SEQ_ORDEM_FISCALIZACAO:       record[24],
-			NUM_ORDEM_FISCALIZACAO:       record[25],
-			SEQ_SOLICITACAO_RECURSO:      record[26],
-			NUM_SOLICITACAO_RECURSO:      record[27],
-			OPERACAO_SOL_RECURSO:         record[28],
-			DAT_ALTERACAO:                record[29],
-			TIPO_ALTERACAO:               record[30],
-			JUSTIFICATIVA_ALTERACAO:      record[31],
-			ULTIMA_ATUALIZACAO_RELATORIO: record[32],
+			UUID:                      uuid.NewString(),
+			SEQ_TAD:                   record[0],
+			STATUS_FORMULARIO:         record[1],
+			SIT_CANCELADO:             record[2],
+			NUM_TAD:                   record[3],
+			SER_TAD:                   record[4],
+			DAT_TAD:                   record[5],
+			DAT_IMPRESSAO:             record[6],
+			NUM_PESSOA_SUSPENSAO:      record[7],
+			NOM_PESSOA_SUSPENSAO:      record[8],
+			CPF_CNPJ_PESSOA_SUSPENSAO: record[9],
+			NUM_PROCESSO:              record[10],
+			DES_TAD:                   record[11],
+			COD_MUNICIPIO:             record[12],
+			NOM_MUNICIPIO:             record[13],
+			SIG_UF:                    record[14],
+			DES_LOCALIZACAO:           record[15],
+			//NUM_LONGITUDE_TAD:            record[16],
+			//NUM_LATITUDE_TAD:             record[17],
+			FORMA_ENTREGA:           record[18],
+			UNID_APRESENTACAO:       record[19],
+			UNID_CONTROLE:           record[20],
+			SEQ_AUTO_INFRACAO:       record[21],
+			SEQ_NOTIFICACAO:         record[22],
+			SEQ_ACAO_FISCALIZATORIA: record[23],
+			SEQ_ORDEM_FISCALIZACAO:  record[24],
+			NUM_ORDEM_FISCALIZACAO:  record[25],
+			//SEQ_SOLICITACAO_RECURSO:      record[26],
+			//NUM_SOLICITACAO_RECURSO:      record[27],
+			//OPERACAO_SOL_RECURSO:         record[28],
+			//DAT_ALTERACAO:                record[29],
+			//TIPO_ALTERACAO:               record[30],
+			//JUSTIFICATIVA_ALTERACAO:      record[31],
+			//ULTIMA_ATUALIZACAO_RELATORIO: record[32],
 		}
 
 		log.Println("Saving to redis ApreensaoIbama ", apreensaoibama.SEQ_TAD)
