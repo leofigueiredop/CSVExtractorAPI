@@ -4,7 +4,9 @@ import (
 	"CSVExtractor/models"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"github.com/RediSearch/redisearch-go/redisearch"
 	"github.com/go-redis/redis/v8"
 	"log"
 )
@@ -15,8 +17,28 @@ var rdb = redis.NewClient(&redis.Options{
 	Password: "", // no password set
 	DB:       0,  // use default DB
 })
+var client *redisearch.Client
 
-func AddToRedis_PEP(pep *models.PEP) {
+func init() {
+	sc := redisearch.NewSchema(redisearch.DefaultOptions).
+		AddField(redisearch.NewTextField("CPFCNPJ"))
+	client = redisearch.NewClient("localhost:6379", "cpfCnpj")
+
+	err := client.CreateIndex(sc)
+	if err != nil {
+		log.Printf("Error creating index: %v", err)
+	}
+}
+
+func indexPEP(pep *models.PEP) {
+	doc := redisearch.NewDocument(pep.UUID, 1.0)
+	doc.Set("CPFCNPJ", pep.CPF)
+
+	if err := client.IndexOptions(
+		redisearch.DefaultIndexingOptions, doc); err != nil {
+		log.Printf("error indexing document: %v", err)
+	}
+
 	jsonPEP, err := json.Marshal(pep)
 	if err != nil {
 		log.Printf("Unable to marshal object: %v", err)
@@ -29,7 +51,16 @@ func AddToRedis_PEP(pep *models.PEP) {
 	}
 }
 
-func AddToRedis_CEIS(ceis *models.CEIS) {
+func indexCEIS(ceis *models.CEIS) {
+
+	doc := redisearch.NewDocument(ceis.UUID, 1.0)
+	doc.Set("CPFCNPJ", ceis.CPFCNPJSancionado)
+
+	if err := client.IndexOptions(
+		redisearch.DefaultIndexingOptions, doc); err != nil {
+		log.Printf("error indexing document: %v", err)
+	}
+
 	jsonCEIS, err := json.Marshal(ceis)
 	if err != nil {
 		log.Printf("Unable to marshal object: %v", err)
@@ -42,7 +73,16 @@ func AddToRedis_CEIS(ceis *models.CEIS) {
 	}
 }
 
-func AddToRedis_CNEP(cnep *models.CNEP) {
+func indexCNEP(cnep *models.CNEP) {
+
+	doc := redisearch.NewDocument(cnep.UUID, 1.0)
+	doc.Set("CPFCNPJ", cnep.CPFCNPJSancionado)
+
+	if err := client.IndexOptions(
+		redisearch.DefaultIndexingOptions, doc); err != nil {
+		log.Printf("error indexing document: %v", err)
+	}
+
 	jsonCNEP, err := json.Marshal(cnep)
 	if err != nil {
 		log.Printf("Unable to marshal object: %v", err)
@@ -55,7 +95,15 @@ func AddToRedis_CNEP(cnep *models.CNEP) {
 	}
 }
 
-func AddToRedis_AutosInfracaoIbama(autoInfracao *models.AutosInfracaoIbama) {
+func indexAutoInfracao(autoInfracao *models.AutosInfracaoIbama) {
+	doc := redisearch.NewDocument(autoInfracao.UUID, 1.0)
+	doc.Set("CPFCNPJ", autoInfracao.CpfCnpjInfrator)
+
+	if err := client.IndexOptions(
+		redisearch.DefaultIndexingOptions, doc); err != nil {
+		log.Printf("error indexing document: %v", err)
+	}
+
 	jsonAutoInfracao, err := json.Marshal(autoInfracao)
 	if err != nil {
 		log.Printf("Unable to marshal object: %v", err)
@@ -68,7 +116,15 @@ func AddToRedis_AutosInfracaoIbama(autoInfracao *models.AutosInfracaoIbama) {
 	}
 }
 
-func AddToRedis_AutosInfracaoICMBIO(autoInfracao *models.AutosInfracaoICMBIO) {
+func indexAutoInfracaoICMBIO(autoInfracao *models.AutosInfracaoICMBIO) {
+	doc := redisearch.NewDocument(autoInfracao.UUID, 1.0)
+	doc.Set("CPFCNPJ", autoInfracao.CPFCNPJ)
+
+	if err := client.IndexOptions(
+		redisearch.DefaultIndexingOptions, doc); err != nil {
+		log.Printf("error indexing document: %v", err)
+	}
+
 	jsonAutoInfracao, err := json.Marshal(autoInfracao)
 	if err != nil {
 		log.Printf("Unable to marshal object: %v", err)
@@ -81,20 +137,35 @@ func AddToRedis_AutosInfracaoICMBIO(autoInfracao *models.AutosInfracaoICMBIO) {
 	}
 }
 
-func AddToRedis_TrabalhoEscravo(trabalhoEscravo *models.TrabalhoEscravo) {
+func indexTrabalhoEscravo(trabalhoEscravo *models.TrabalhoEscravo) {
+	doc := redisearch.NewDocument(trabalhoEscravo.UUID, 1.0)
+	doc.Set("CPFCNPJ", trabalhoEscravo.CNPJCPF)
+
+	if err := client.IndexOptions(
+		redisearch.DefaultIndexingOptions, doc); err != nil {
+		log.Printf("error indexing document: %v", err)
+	}
+
 	jsonTrabalhoEscravo, err := json.Marshal(trabalhoEscravo)
 	if err != nil {
 		log.Printf("Unable to marshal object: %v", err)
 		return
 	}
-
 	err = rdb.Set(ctx, "TrabalhoEscravo:"+trabalhoEscravo.UUID, jsonTrabalhoEscravo, 0).Err()
 	if err != nil {
 		log.Printf("Unable to save object to Redis: %v", err)
 	}
 }
 
-func AddToRedis_Suspensaobama(suspensaobama *models.Suspensaobama) {
+func indexSuspensaobama(suspensaobama *models.Suspensaobama) {
+	doc := redisearch.NewDocument(suspensaobama.UUID, 1.0)
+	doc.Set("CPFCNPJ", suspensaobama.CPF_CNPJ_PESSOA_SUSPENSAO)
+
+	if err := client.IndexOptions(
+		redisearch.DefaultIndexingOptions, doc); err != nil {
+		log.Printf("error indexing document: %v", err)
+	}
+
 	jsonSuspensaobama, err := json.Marshal(suspensaobama)
 	if err != nil {
 		log.Printf("Unable to marshal object: %v", err)
@@ -107,14 +178,22 @@ func AddToRedis_Suspensaobama(suspensaobama *models.Suspensaobama) {
 	}
 }
 
-func AddToRedis_ApreensaoIbama(apreensaoibama *models.ApreensaoIbama) {
-	jsonApreensao, err := json.Marshal(apreensaoibama)
+func indexApreensaoIbama(apreensaoIbama *models.ApreensaoIbama) {
+	doc := redisearch.NewDocument(apreensaoIbama.UUID, 1.0)
+	doc.Set("CPFCNPJ", apreensaoIbama.CPF_CNPJ_PESSOA_SUSPENSAO)
+
+	if err := client.IndexOptions(
+		redisearch.DefaultIndexingOptions, doc); err != nil {
+		log.Printf("error indexing document: %v", err)
+	}
+
+	jsonApreensao, err := json.Marshal(apreensaoIbama)
 	if err != nil {
 		log.Printf("Unable to marshal object: %v", err)
 		return
 	}
 
-	err = rdb.Set(ctx, "ApreensaoIbama:"+apreensaoibama.UUID, jsonApreensao, 0).Err()
+	err = rdb.Set(ctx, "ApreensaoIbama:"+apreensaoIbama.UUID, jsonApreensao, 0).Err()
 	if err != nil {
 		log.Printf("Unable to save object to Redis: %v", err)
 	}
@@ -235,8 +314,8 @@ func SearchApreensaoIbamaInRedis(key string) (*models.ApreensaoIbama, error) {
 func searchInRedis(key string, prefix string) (interface{}, error) {
 	redisKey := prefix + key
 	val, err := rdb.Get(ctx, redisKey).Result()
-	if err == redis.Nil {
-		return nil, fmt.Errorf("Key %s does not exist", redisKey)
+	if errors.Is(err, redis.Nil) {
+		return nil, fmt.Errorf("key %s does not exist", redisKey)
 	} else if err != nil {
 		return nil, fmt.Errorf("Error accessing Redis: %v", err)
 	}

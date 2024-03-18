@@ -46,7 +46,7 @@ func LoadCSVToRedis_PEP(filePath string) {
 		}
 
 		log.Println("Saving to redis PEP", pep.CPF)
-		AddToRedis_PEP(&pep)
+		indexPEP(&pep)
 	}
 }
 
@@ -94,7 +94,7 @@ func LoadCSVToRedis_CEIS(filePath string) {
 		}
 
 		log.Println("Saving to redis CEIS", ceis.CPFCNPJSancionado)
-		AddToRedis_CEIS(&ceis)
+		indexCEIS(&ceis)
 	}
 }
 
@@ -146,7 +146,7 @@ func LoadCSVToRedis_CNEP(filePath string) {
 		}
 
 		log.Println("Saving to redis CNEP", cnep.CPFCNPJSancionado)
-		AddToRedis_CNEP(&cnep)
+		indexCNEP(&cnep)
 	}
 }
 
@@ -219,7 +219,7 @@ func LoadCSVToRedis_AutosInfracaoIbama(filePath string) {
 			}
 
 			log.Println("Saving to redis AutosInfracaoIbama ", autoInfracao.SeqAutoInfracao)
-			AddToRedis_AutosInfracaoIbama(&autoInfracao)
+			indexAutoInfracao(&autoInfracao)
 		}
 	}
 }
@@ -276,7 +276,7 @@ func LoadCSVToRedis_AutosInfracaoICMBIO(filePath string) {
 		}
 
 		log.Println("Saving to redis AutosInfracaoICMBIO ", autoInfracao.ID)
-		AddToRedis_AutosInfracaoICMBIO(&autoInfracao)
+		indexAndSaveAutoInfracao(&autoInfracao)
 	}
 }
 
