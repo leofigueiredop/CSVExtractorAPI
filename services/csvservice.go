@@ -276,7 +276,7 @@ func LoadCSVToRedis_AutosInfracaoICMBIO(filePath string) {
 		}
 
 		log.Println("Saving to redis AutosInfracaoICMBIO ", autoInfracao.ID)
-		indexAndSaveAutoInfracao(&autoInfracao)
+		indexAutoInfracaoICMBIO(&autoInfracao)
 	}
 }
 
@@ -316,7 +316,7 @@ func LoadCSVToRedis_TrabalhoEscravo(filePath string) {
 		}
 
 		log.Println("Saving to redis TrabalhoEscravo ", trabalhoEscravo.ID)
-		AddToRedis_TrabalhoEscravo(&trabalhoEscravo)
+		indexTrabalhoEscravo(&trabalhoEscravo)
 	}
 }
 
@@ -380,7 +380,7 @@ func LoadCSVToRedis_Suspensaobama(filePath string) {
 		}
 
 		log.Println("Saving to redis Suspensaobama ", suspensaobama.SEQ_TAD)
-		AddToRedis_Suspensaobama(&suspensaobama)
+		indexSuspensaobama(&suspensaobama)
 	}
 }
 
@@ -443,7 +443,7 @@ func LoadCSVToRedis_ApreensaoIbama(filePath string) {
 		}
 
 		log.Println("Saving to redis ApreensaoIbama ", apreensaoibama.SEQ_TAD)
-		AddToRedis_ApreensaoIbama(&apreensaoibama)
+		indexApreensaoIbama(&apreensaoibama)
 	}
 }
 

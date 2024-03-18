@@ -4,11 +4,11 @@ import (
 	"CSVExtractor/models"
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"github.com/RediSearch/redisearch-go/redisearch"
 	"github.com/go-redis/redis/v8"
 	"log"
+	"strings"
 )
 
 var ctx = context.Background()
@@ -198,153 +198,66 @@ func indexApreensaoIbama(apreensaoIbama *models.ApreensaoIbama) {
 		log.Printf("Unable to save object to Redis: %v", err)
 	}
 }
-
-func SearchPEPInRedis(key string) (*models.PEP, error) {
-	result, err := searchInRedis(key, "PEP")
-	if err != nil {
-		return nil, err
-	}
-
-	model, ok := result.(*models.PEP)
-	if !ok {
-		return nil, fmt.Errorf("Failed to convert result to model.PEP")
-	}
-
-	return model, nil
+func SearchPEPInRedis(key string) ([]models.Result, error) {
+	return searchInRedis(key, "PEP")
 }
 
-func SearchCEISInRedis(key string) (*models.CEIS, error) {
-	result, err := searchInRedis(key, "CEIS")
-	if err != nil {
-		return nil, err
-	}
-
-	model, ok := result.(*models.CEIS)
-	if !ok {
-		return nil, fmt.Errorf("Failed to convert result to model.CEIS")
-	}
-
-	return model, nil
+func SearchCEISInRedis(key string) ([]models.Result, error) {
+	return searchInRedis(key, "CEIS")
 }
 
-func SearchCNEPInRedis(key string) (*models.CNEP, error) {
-	result, err := searchInRedis(key, "CNEP")
-	if err != nil {
-		return nil, err
-	}
-
-	model, ok := result.(*models.CNEP)
-	if !ok {
-		return nil, fmt.Errorf("Failed to convert result to model.CNEP")
-	}
-
-	return model, nil
+func SearchCNEPInRedis(key string) ([]models.Result, error) {
+	return searchInRedis(key, "CNEP")
 }
 
-func SearchAutosInfracaoIbamaInRedis(key string) (*models.AutosInfracaoIbama, error) {
-	result, err := searchInRedis(key, "AutosInfracaoIbama")
-	if err != nil {
-		return nil, err
-	}
-
-	model, ok := result.(*models.AutosInfracaoIbama)
-	if !ok {
-		return nil, fmt.Errorf("Failed to convert result to model.AutosInfracaoIbama")
-	}
-
-	return model, nil
+func SearchAutosInfracaoIbamaInRedis(key string) ([]models.Result, error) {
+	return searchInRedis(key, "AutosInfracaoIbama")
 }
 
-func SearchAutosInfracaoICMBIOInRedis(key string) (*models.AutosInfracaoICMBIO, error) {
-	result, err := searchInRedis(key, "AutosInfracaoICMBIO")
-	if err != nil {
-		return nil, err
-	}
-
-	model, ok := result.(*models.AutosInfracaoICMBIO)
-	if !ok {
-		return nil, fmt.Errorf("Failed to convert result to model.AutosInfracaoICMBIO")
-	}
-
-	return model, nil
+func SearchAutosInfracaoICMBIOInRedis(key string) ([]models.Result, error) {
+	return searchInRedis(key, "AutosInfracaoICMBIO")
 }
 
-func SearchTrabalhoEscravoInRedis(key string) (*models.TrabalhoEscravo, error) {
-	result, err := searchInRedis(key, "TrabalhoEscravo")
-	if err != nil {
-		return nil, err
-	}
-
-	model, ok := result.(*models.TrabalhoEscravo)
-	if !ok {
-		return nil, fmt.Errorf("Failed to convert result to model.TrabalhoEscravo")
-	}
-
-	return model, nil
+func SearchTrabalhoEscravoInRedis(key string) ([]models.Result, error) {
+	return searchInRedis(key, "TrabalhoEscravo")
 }
 
-func SearchSuspensaobamaInRedis(key string) (*models.Suspensaobama, error) {
-	result, err := searchInRedis(key, "Suspensaobama")
-	if err != nil {
-		return nil, err
-	}
-
-	model, ok := result.(*models.Suspensaobama)
-	if !ok {
-		return nil, fmt.Errorf("Failed to convert result to model.Suspensaobama")
-	}
-
-	return model, nil
+func SearchSuspensaobamaInRedis(key string) ([]models.Result, error) {
+	return searchInRedis(key, "Suspensaobama")
 }
 
-func SearchApreensaoIbamaInRedis(key string) (*models.ApreensaoIbama, error) {
-	result, err := searchInRedis(key, "ApreensaoIbama")
-	if err != nil {
-		return nil, err
-	}
-
-	model, ok := result.(*models.ApreensaoIbama)
-	if !ok {
-		return nil, fmt.Errorf("Failed to convert result to model.ApreensaoIbama")
-	}
-
-	return model, nil
+func SearchApreensaoIbamaInRedis(key string) ([]models.Result, error) {
+	return searchInRedis(key, "ApreensaoIbama")
 }
 
-func searchInRedis(key string, prefix string) (interface{}, error) {
-	redisKey := prefix + key
-	val, err := rdb.Get(ctx, redisKey).Result()
-	if errors.Is(err, redis.Nil) {
-		return nil, fmt.Errorf("key %s does not exist", redisKey)
-	} else if err != nil {
-		return nil, fmt.Errorf("Error accessing Redis: %v", err)
-	}
+func searchInRedis(key string, prefix string) ([]models.Result, error) {
+	// search in RediSearch index
+	query := redisearch.NewQuery(fmt.Sprintf(`@CPFCNPJ:"*%s*"`, key))
+	docs, _, err := client.Search(query)
 
-	var model interface{}
-	switch prefix {
-	case "PEP":
-		model = &models.PEP{}
-	case "CEIS":
-		model = &models.CEIS{}
-	case "CNEP":
-		model = &models.CNEP{}
-	case "AutosInfracaoIbama":
-		model = &models.AutosInfracaoIbama{}
-	case "AutosInfracaoICMBIO":
-		model = &models.AutosInfracaoICMBIO{}
-	case "TrabalhoEscravo":
-		model = &models.TrabalhoEscravo{}
-	case "Suspensaobama":
-		model = &models.Suspensaobama{}
-	case "ApreensaoIbama":
-		model = &models.ApreensaoIbama{}
-	default:
-		return nil, fmt.Errorf("prefix %s not supported", prefix)
-	}
-
-	err = json.Unmarshal([]byte(val), model)
 	if err != nil {
-		return nil, fmt.Errorf("Error unmarshalling data: %v", err)
+		return nil, fmt.Errorf("Error searching in RediSearch: %v", err)
 	}
-	return model, nil
+
+	var results []models.Result
+	for _, doc := range docs {
+		if strings.HasPrefix(doc.Id, prefix) {
+			val, err := rdb.Get(ctx, doc.Id).Result()
+			if err != nil {
+				return nil, fmt.Errorf("Error accessing Redis: %v", err)
+			}
+
+			results = append(results, models.Result{
+				Key:   doc.Id,
+				Index: prefix,
+				Data:  json.RawMessage(val),
+			})
+		}
+	}
+
+	if len(results) == 0 {
+		return nil, fmt.Errorf("Key %s does not exist", key)
+	}
+
+	return results, nil
 }

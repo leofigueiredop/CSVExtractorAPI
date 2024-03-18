@@ -1,7 +1,11 @@
 package models
 
+import "encoding/json"
+
 type Result struct {
-	// TODO: define http result
+	Key   string          `json:"key"`
+	Index string          `json:"index"`
+	Data  json.RawMessage `json:"data"`
 }
 
 type PEP struct {
