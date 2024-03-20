@@ -6,6 +6,29 @@ import (
 	"net/http"
 )
 
+// @Summary Search CadastroBasico
+// @Description Get CB by key
+// @ID get-CB
+// @Accept json
+// @Produce json
+// @Param key query string true "CB key"
+// @Router /search/cadastroBasico [get]
+func SearchHandlerPessoa(w http.ResponseWriter, r *http.Request) {
+	key := r.URL.Query().Get("key")
+	if key == "" {
+		http.Error(w, "Key parameter is missing", http.StatusBadRequest)
+		return
+	}
+
+	model, err := services.SearchCadastroBasicoInRedis(key)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	json.NewEncoder(w).Encode(model)
+}
+
 // @Summary Search PEP
 // @Description Get PEP by key
 // @ID get-pep

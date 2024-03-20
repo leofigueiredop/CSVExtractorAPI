@@ -3,18 +3,154 @@ package services
 import (
 	"CSVExtractor/models"
 	"encoding/csv"
+	"fmt"
 	"github.com/google/uuid"
 	"io"
 	"log"
 	"os"
 	"path/filepath"
+	"regexp"
+	"strconv"
 	"strings"
 	"sync"
 )
 
 var lock = &sync.Mutex{}
 
-func LoadCSVToRedis_PEP(filePath string) {
+type UUIDMessage struct {
+	TableName string
+	UUID      string
+}
+
+func LoadCSVToDB_CB(filePath string) {
+
+	db := &Database{}
+	err := db.Open()
+	if err != nil {
+		log.Fatalf("Failed to open database: %v", err)
+	}
+	defer db.Close()
+
+	db.InitTables()
+
+	file, err := os.Open(filePath)
+	if err != nil {
+		log.Fatalf("Unable to read input file: %s", err)
+	}
+	defer file.Close()
+	//
+	//tables := []string{"PEP", "CNEP", "CEIS", "AutosInfracaoIbama", "AutosInfracaoICMBIO", "TrabalhoEscravo", "Suspensaobama", "ApreensaoIbama"}
+	//fields := []string{"CPF", "CPFCNPJSanctioned", "CPFCNPJSanctioned", "CpfCnpjInfrator", "CPFCNPJ", "CNPJCPF", "CPF_CNPJ_PESSOA_SUSPENSAO", "CPF_CNPJ_PESSOA_SUSPENSAO"}
+	//stmts := make(map[string]*sql.Stmt)
+	//for i, table := range tables {
+	//	if table == "PEP" {
+	//		stmt, err := db.DB.Prepare(fmt.Sprintf("SELECT UUID FROM %s WHERE %s LIKE ?", table, fields[i]))
+	//		if err != nil {
+	//			log.Fatalf("Error preparing statement for table %s: %s", table, err)
+	//		}
+	//		stmts[table] = stmt
+	//	} else {
+	//		stmt, err := db.DB.Prepare(fmt.Sprintf("SELECT UUID FROM %s WHERE %s = ?", table, fields[i]))
+	//		if err != nil {
+	//			log.Fatalf("Error preparing statement for table %s: %s", table, err)
+	//		}
+	//		stmts[table] = stmt
+	//	}
+	//}
+
+	csvReader := csv.NewReader(file)
+	csvReader.Comma = ';'
+	// Ignorar o cabeçalho
+	_, err = csvReader.Read()
+	if err != nil {
+		log.Fatalf("Erro ao ler o arquivo CSV: %s", err)
+	}
+	for {
+		record, err := csvReader.Read()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			log.Fatalf("Error reading CSV file: %s", err)
+		}
+
+		value, err := strconv.Atoi(record[1])
+		if err != nil {
+			log.Fatalf("Error converting string to int: %s", err)
+		}
+		cpfCnpj := ""
+		switch record[0] {
+		case "PF":
+			cpfCnpj = fmt.Sprintf("%011d", value)
+		case "PJ":
+			cpfCnpj = fmt.Sprintf("%014d", value)
+		}
+
+		cadastro := models.CadastroBasico{
+			UUID:       uuid.NewString(),
+			TipoPessoa: record[0],
+			CPF_CNPJ:   cpfCnpj,
+		}
+
+		//var wg sync.WaitGroup
+		//messages := make(chan UUIDMessage)
+		//
+		//for table, stmt := range stmts {
+		//	wg.Add(1)
+		//	go func(table string, stmt *sql.Stmt, cpf string) {
+		//		defer wg.Done()
+		//
+		//		var id string
+		//		if err := stmt.QueryRow("%" + cpf + "%").Scan(&id); err != nil {
+		//			if err == sql.ErrNoRows {
+		//				return
+		//			}
+		//			log.Printf("Error executing query for table %s: %s", table, err)
+		//			return
+		//		}
+		//		uuidMsg := UUIDMessage{
+		//			TableName: table,
+		//			UUID:      id,
+		//		}
+		//		messages <- uuidMsg
+		//	}(table, stmt, cpfCnpj)
+		//}
+		//
+		//go func() {
+		//	wg.Wait()
+		//	close(messages)
+		//}()
+
+		//for uuidMsg := range messages {
+		//	switch uuidMsg.TableName {
+		//	case "PEP":
+		//		cadastro.PEP = uuidMsg.UUID
+		//	case "CNEP":
+		//		cadastro.CNEP = uuidMsg.UUID
+		//	case "CEIS":
+		//		cadastro.CEIS = uuidMsg.UUID
+		//	case "AutosInfracaoIbama":
+		//		cadastro.AutosInfracaoIbama = uuidMsg.UUID
+		//	case "AutosInfracaoICMBIO":
+		//		cadastro.AutosInfracaoICMBIO = uuidMsg.UUID
+		//	case "TrabalhoEscravo":
+		//		cadastro.TrabalhoEscravo = uuidMsg.UUID
+		//	case "Suspensaobama":
+		//		cadastro.Suspensaobama = uuidMsg.UUID
+		//	case "ApreensaoIbama":
+		//		cadastro.ApreensaoIbama = uuidMsg.UUID
+		//	}
+		//}
+
+		if err := db.InsertCadastroBasico(cadastro); err != nil {
+			log.Printf("Error saving to SQLite CADASTROBASICO for %s: %v", cadastro.CPF_CNPJ, err)
+		} else {
+			log.Printf("Saving to SQLite CADASTROBASICO success for: %s", cadastro.CPF_CNPJ)
+		}
+	}
+}
+
+func LoadCSVToDB_PEP(db *Database, filePath string) {
 	file, err := os.Open(filePath)
 	if err != nil {
 		log.Fatalf("Unable to read input file: %s", err)
@@ -32,9 +168,13 @@ func LoadCSVToRedis_PEP(filePath string) {
 			log.Fatalf("Error reading CSV file: %s", err)
 		}
 
+		// Expressão regular para remover todos os caracteres não numéricos
+		re := regexp.MustCompile("[^0-9]+")
+		cleanCPF := re.ReplaceAllString(record[0], "")
+
 		pep := models.PEP{
 			UUID:                  uuid.NewString(),
-			CPF:                   strings.Trim(record[0], "\""),
+			CPF:                   cleanCPF, // Alterado para cleanCPF
 			Nome_PEP:              strings.Trim(record[1], "\""),
 			Sigla_Funcao:          strings.Trim(record[2], "\""),
 			Descricao_Funcao:      strings.Trim(record[3], "\""),
@@ -45,12 +185,16 @@ func LoadCSVToRedis_PEP(filePath string) {
 			Data_Fim_Carencia:     strings.Trim(record[8], "\""),
 		}
 
-		log.Println("Saving to redis PEP", pep.CPF)
-		indexPEP(&pep)
+		log.Println("Saving to SQLite PEP", pep.CPF)
+		err = db.InsertPEP(pep)
+		if err != nil {
+			log.Println("Error saving to SQLite CEIS", pep.CPF)
+			log.Println(err)
+		}
 	}
 }
 
-func LoadCSVToRedis_CEIS(filePath string) {
+func LoadCSVToDB_CEIS(db *Database, filePath string) {
 	file, err := os.Open(filePath)
 	if err != nil {
 		log.Fatalf("Unable to read input file: %s", err)
@@ -93,12 +237,16 @@ func LoadCSVToRedis_CEIS(filePath string) {
 			FundamentacaoLegal:            strings.Trim(record[20], "\""),
 		}
 
-		log.Println("Saving to redis CEIS", ceis.CPFCNPJSancionado)
-		indexCEIS(&ceis)
+		log.Println("Saving to SQLite CEIS", ceis.CPFCNPJSancionado)
+		err = db.InsertCEIS(ceis)
+		if err != nil {
+			log.Println("Error saving to SQLite CEIS", ceis.CPFCNPJSancionado)
+			log.Println(err)
+		}
 	}
 }
 
-func LoadCSVToRedis_CNEP(filePath string) {
+func LoadCSVToDB_CNEP(db *Database, filePath string) {
 	file, err := os.Open(filePath)
 	if err != nil {
 		log.Fatalf("Unable to read CNEP input file: %s", err)
@@ -145,12 +293,18 @@ func LoadCSVToRedis_CNEP(filePath string) {
 			FundamentacaoLegal:            strings.Trim(record[21], "\""),
 		}
 
-		log.Println("Saving to redis CNEP", cnep.CPFCNPJSancionado)
-		indexCNEP(&cnep)
+		log.Println("Saving to SQLite CNEP", cnep.CPFCNPJSancionado)
+		err = db.InsertCNEP(cnep)
+		if err != nil {
+			log.Println("Error saving to SQLite CNEP", cnep.CPFCNPJSancionado)
+			log.Println(err)
+
+		}
+
 	}
 }
 
-func LoadCSVToRedis_AutosInfracaoIbama(filePath string) {
+func LoadCSVToDB_AutosInfracaoIbama(db *Database, filePath string) {
 	file, err := os.Open(filePath)
 	if err != nil {
 		log.Fatalf("Unable to read AutosInfracaoIbama input file: %s", err)
@@ -173,58 +327,48 @@ func LoadCSVToRedis_AutosInfracaoIbama(filePath string) {
 		} else {
 
 			autoInfracao := models.AutosInfracaoIbama{
-				UUID:                uuid.NewString(),
-				SeqAutoInfracao:     strings.Trim(record[0], "\""),
-				NumAutoInfracao:     strings.Trim(record[1], "\""),
-				SerAutoInfracao:     strings.Trim(record[2], "\""),
-				TipoAuto:            strings.Trim(record[3], "\""),
-				TipoMulta:           strings.Trim(record[4], "\""),
-				ValAutoInfracao:     strings.Trim(record[5], "\""),
-				PatrimonioApuracao:  strings.Trim(record[6], "\""),
-				GravidadeInfracao:   strings.Trim(record[7], "\""),
-				UnidArrecadacao:     strings.Trim(record[8], "\""),
-				DesAutoInfracao:     strings.Trim(record[9], "\""),
-				DatHoraAutoInfracao: strings.Trim(record[10], "\""),
-				//FormaEntrega:               strings.Trim(record[11], "\""),
-				DatCienciaAutuacao: strings.Trim(record[12], "\""),
-				CodMunicipio:       strings.Trim(record[13], "\""),
-				Municipio:          strings.Trim(record[14], "\""),
-				Uf:                 strings.Trim(record[15], "\""),
-				NumProcesso:        strings.Trim(record[16], "\""),
-				CodInfracao:        strings.Trim(record[17], "\""),
-				DesInfracao:        strings.Trim(record[18], "\""),
-				TipoInfracao:       strings.Trim(record[19], "\""),
-				NomeInfrator:       strings.Trim(record[20], "\""),
-				CpfCnpjInfrator:    strings.Trim(record[21], "\""),
-				//QtdArea:                    strings.Trim(record[22], "\""),
-				//InfracaoArea:               strings.Trim(record[23], "\""),
-				//DesOutrosTipoArea:          strings.Trim(record[24], "\""),
-				//ClassificacaoArea:          strings.Trim(record[25], "\""),
-				//NumLatitudeAuto:            strings.Trim(record[26], "\""),
-				//NumLongitudeAuto:           strings.Trim(record[27], "\""),
+				UUID:                 uuid.NewString(),
+				SeqAutoInfracao:      strings.Trim(record[0], "\""),
+				NumAutoInfracao:      strings.Trim(record[1], "\""),
+				SerAutoInfracao:      strings.Trim(record[2], "\""),
+				TipoAuto:             strings.Trim(record[3], "\""),
+				TipoMulta:            strings.Trim(record[4], "\""),
+				ValAutoInfracao:      strings.Trim(record[5], "\""),
+				PatrimonioApuracao:   strings.Trim(record[6], "\""),
+				GravidadeInfracao:    strings.Trim(record[7], "\""),
+				UnidArrecadacao:      strings.Trim(record[8], "\""),
+				DesAutoInfracao:      strings.Trim(record[9], "\""),
+				DatHoraAutoInfracao:  strings.Trim(record[10], "\""),
+				DatCienciaAutuacao:   strings.Trim(record[12], "\""),
+				CodMunicipio:         strings.Trim(record[13], "\""),
+				Municipio:            strings.Trim(record[14], "\""),
+				Uf:                   strings.Trim(record[15], "\""),
+				NumProcesso:          strings.Trim(record[16], "\""),
+				CodInfracao:          strings.Trim(record[17], "\""),
+				DesInfracao:          strings.Trim(record[18], "\""),
+				TipoInfracao:         strings.Trim(record[19], "\""),
+				NomeInfrator:         strings.Trim(record[20], "\""),
+				CpfCnpjInfrator:      strings.Trim(record[21], "\""),
 				DesLocalInfracao:     strings.Trim(record[28], "\""),
 				NotificacaoVinculada: strings.Trim(record[29], "\""),
 				AcaoFiscalizatoria:   strings.Trim(record[30], "\""),
 				UnidControle:         strings.Trim(record[31], "\""),
 				TipoAcao:             strings.Trim(record[32], "\""),
 				Operacao:             strings.Trim(record[33], "\""),
-				//DenunciaSisliv:             strings.Trim(record[34], "\""),
-				//OrdemFiscalizacao:          strings.Trim(record[35], "\""),
-				//SolicitacaoRecurso:         strings.Trim(record[36], "\""),
-				//OperacaoSolRecurso:         strings.Trim(record[37], "\""),
-				DatLancamento: strings.Trim(record[38], "\""),
-				//DatUltAlteracao:            strings.Trim(record[39], "\""),
-				//TipoUltAlteracao:           strings.Trim(record[40], "\""),
-				//UltimaAtualizacaoRelatorio: strings.Trim(record[41], "\""),
+				DatLancamento:        strings.Trim(record[38], "\""),
 			}
 
-			log.Println("Saving to redis AutosInfracaoIbama ", autoInfracao.SeqAutoInfracao)
-			indexAutoInfracao(&autoInfracao)
+			log.Println("Saving to SQLite AutosInfracaoIbama ", autoInfracao.SeqAutoInfracao)
+			err = db.InsertAutosInfracaoIbama(autoInfracao)
+			if err != nil {
+				log.Println("Error saving to SQLite AutosInfracaoIbama", autoInfracao.SeqAutoInfracao)
+				log.Println(err)
+			}
 		}
 	}
 }
 
-func LoadCSVToRedis_AutosInfracaoICMBIO(filePath string) {
+func LoadCSVToDB_AutosInfracaoICMBIO(db *Database, filePath string) {
 	file, err := os.Open(filePath)
 	if err != nil {
 		log.Fatalf("Unable to read AutosInfracaoICMBIO input file: %s", err)
@@ -275,12 +419,16 @@ func LoadCSVToRedis_AutosInfracaoICMBIO(filePath string) {
 			Julgamento:        strings.Trim(record[25], "\""),
 		}
 
-		log.Println("Saving to redis AutosInfracaoICMBIO ", autoInfracao.ID)
-		indexAutoInfracaoICMBIO(&autoInfracao)
+		log.Println("Saving to SQLite AutosInfracaoICMBIO ", autoInfracao.ID)
+		err = db.InsertAutosInfracaoICMBIO(autoInfracao)
+		if err != nil {
+			log.Println("Error saving to SQLite AutosInfracaoICMBIO", autoInfracao.ID)
+			log.Println(err)
+		}
 	}
 }
 
-func LoadCSVToRedis_TrabalhoEscravo(filePath string) {
+func LoadCSVToDB_TrabalhoEscravo(db *Database, filePath string) {
 	file, err := os.Open(filePath)
 	if err != nil {
 		log.Fatalf("Unable to read TrabalhoEscravo input file: %s", err)
@@ -315,12 +463,16 @@ func LoadCSVToRedis_TrabalhoEscravo(filePath string) {
 			InclusaoCadastroEmpregadores: strings.Trim(record[9], "\""),
 		}
 
-		log.Println("Saving to redis TrabalhoEscravo ", trabalhoEscravo.ID)
-		indexTrabalhoEscravo(&trabalhoEscravo)
+		log.Println("Saving to SQLite TrabalhoEscravo ", trabalhoEscravo.ID)
+		err = db.InsertTrabalhoEscravo(trabalhoEscravo)
+		if err != nil {
+			log.Println("Error saving to SQLite TrabalhoEscravo", trabalhoEscravo.ID)
+			log.Println(err)
+		}
 	}
 }
 
-func LoadCSVToRedis_Suspensaobama(filePath string) {
+func LoadCSVToDB_Suspensaobama(db *Database, filePath string) {
 	file, err := os.Open(filePath)
 	if err != nil {
 		log.Fatalf("Unable to read Suspensaobama input file: %s", err)
@@ -359,32 +511,27 @@ func LoadCSVToRedis_Suspensaobama(filePath string) {
 			NOM_MUNICIPIO:             strings.Trim(record[13], "\""),
 			SIG_UF:                    strings.Trim(record[14], "\""),
 			DES_LOCALIZACAO:           strings.Trim(record[15], "\""),
-			//NUM_LONGITUDE_TAD:            strings.Trim(record[16], "\""),
-			//NUM_LATITUDE_TAD:             strings.Trim(record[17], "\""),
-			DES_JUSTIFICATIVA:       strings.Trim(record[18], "\""),
-			FORMA_ENTREGA:           strings.Trim(record[19], "\""),
-			UNID_APRESENTACAO:       strings.Trim(record[20], "\""),
-			UNID_CONTROLE:           strings.Trim(record[21], "\""),
-			SEQ_AUTO_INFRACAO:       strings.Trim(record[22], "\""),
-			SEQ_NOTIFICACAO:         strings.Trim(record[23], "\""),
-			SEQ_ACAO_FISCALIZATORIA: strings.Trim(record[24], "\""),
-			SEQ_ORDEM_FISCALIZACAO:  strings.Trim(record[25], "\""),
-			NUM_ORDEM_FISCALIZACAO:  strings.Trim(record[26], "\""),
-			//SEQ_SOLICITACAO_RECURSO:      strings.Trim(record[27], "\""),
-			//NUM_SOLICITACAO_RECURSO:      strings.Trim(record[28], "\""),
-			//OPERACAO_SOL_RECURSO:         strings.Trim(record[29], "\""),
-			//DAT_ALTERACAO:                strings.Trim(record[30], "\""),
-			//TIPO_ALTERACAO:               strings.Trim(record[31], "\""),
-			//JUSTIFICATIVA_ALTERACAO:      strings.Trim(record[32], "\""),
-			//ULTIMA_ATUALIZACAO_RELATORIO: strings.Trim(record[33], "\""),
+			DES_JUSTIFICATIVA:         strings.Trim(record[18], "\""),
+			FORMA_ENTREGA:             strings.Trim(record[19], "\""),
+			UNID_APRESENTACAO:         strings.Trim(record[20], "\""),
+			UNID_CONTROLE:             strings.Trim(record[21], "\""),
+			SEQ_AUTO_INFRACAO:         strings.Trim(record[22], "\""),
+			SEQ_NOTIFICACAO:           strings.Trim(record[23], "\""),
+			SEQ_ACAO_FISCALIZATORIA:   strings.Trim(record[24], "\""),
+			SEQ_ORDEM_FISCALIZACAO:    strings.Trim(record[25], "\""),
+			NUM_ORDEM_FISCALIZACAO:    strings.Trim(record[26], "\""),
 		}
 
-		log.Println("Saving to redis Suspensaobama ", suspensaobama.SEQ_TAD)
-		indexSuspensaobama(&suspensaobama)
+		log.Println("Saving to SQLite Suspensaobama ", suspensaobama.SEQ_TAD)
+		err = db.InsertSuspensaobama(suspensaobama)
+		if err != nil {
+			log.Println("Error saving to SQLite Suspensaobama", suspensaobama.SEQ_TAD)
+			log.Println(err)
+		}
 	}
 }
 
-func LoadCSVToRedis_ApreensaoIbama(filePath string) {
+func LoadCSVToDB_ApreensaoIbama(db *Database, filePath string) {
 	file, err := os.Open(filePath)
 	if err != nil {
 		log.Fatalf("Unable to read ApreensaoIbama input file: %s", err)
@@ -423,36 +570,44 @@ func LoadCSVToRedis_ApreensaoIbama(filePath string) {
 			NOM_MUNICIPIO:             record[13],
 			SIG_UF:                    record[14],
 			DES_LOCALIZACAO:           record[15],
-			//NUM_LONGITUDE_TAD:            record[16],
-			//NUM_LATITUDE_TAD:             record[17],
-			FORMA_ENTREGA:           record[18],
-			UNID_APRESENTACAO:       record[19],
-			UNID_CONTROLE:           record[20],
-			SEQ_AUTO_INFRACAO:       record[21],
-			SEQ_NOTIFICACAO:         record[22],
-			SEQ_ACAO_FISCALIZATORIA: record[23],
-			SEQ_ORDEM_FISCALIZACAO:  record[24],
-			NUM_ORDEM_FISCALIZACAO:  record[25],
-			//SEQ_SOLICITACAO_RECURSO:      record[26],
-			//NUM_SOLICITACAO_RECURSO:      record[27],
-			//OPERACAO_SOL_RECURSO:         record[28],
-			//DAT_ALTERACAO:                record[29],
-			//TIPO_ALTERACAO:               record[30],
-			//JUSTIFICATIVA_ALTERACAO:      record[31],
-			//ULTIMA_ATUALIZACAO_RELATORIO: record[32],
+			FORMA_ENTREGA:             record[18],
+			UNID_APRESENTACAO:         record[19],
+			UNID_CONTROLE:             record[20],
+			SEQ_AUTO_INFRACAO:         record[21],
+			SEQ_NOTIFICACAO:           record[22],
+			SEQ_ACAO_FISCALIZATORIA:   record[23],
+			SEQ_ORDEM_FISCALIZACAO:    record[24],
+			NUM_ORDEM_FISCALIZACAO:    record[25],
 		}
 
-		log.Println("Saving to redis ApreensaoIbama ", apreensaoibama.SEQ_TAD)
-		indexApreensaoIbama(&apreensaoibama)
+		log.Println("Saving to SQLite ApreensaoIbama ", apreensaoibama.SEQ_TAD)
+		err = db.InsertApreensaoIbama(apreensaoibama)
+		if err != nil {
+			log.Println("Error saving to SQLite apreensaoibama", apreensaoibama.SEQ_TAD)
+			log.Println(err)
+		}
 	}
 }
 
 func LoadAllCSVs(dirPath string) {
+
+	db := &Database{}
+
+	err := db.Open()
+	if err != nil {
+		log.Fatalf("Failed to open database: %v", err)
+	}
+	defer db.Close()
+
+	err = db.InitTables()
+	if err != nil {
+		log.Fatalf("Failed to initialize tables: %v", err)
+	}
+
 	files, err := os.ReadDir(dirPath)
 	if err != nil {
 		log.Fatal(err)
 	}
-
 	var wg sync.WaitGroup
 	for _, file := range files {
 		if filepath.Ext(file.Name()) == ".csv" {
@@ -462,21 +617,21 @@ func LoadAllCSVs(dirPath string) {
 				filePath := filepath.Join(dirPath, file.Name())
 				switch {
 				case strings.Contains(strings.ToLower(file.Name()), "pep"):
-					LoadCSVToRedis_PEP(filePath)
+					LoadCSVToDB_PEP(db, filePath)
 				case strings.Contains(strings.ToLower(file.Name()), "ceis"):
-					LoadCSVToRedis_CEIS(filePath)
+					LoadCSVToDB_CEIS(db, filePath)
 				case strings.Contains(strings.ToLower(file.Name()), "cnep"):
-					LoadCSVToRedis_CNEP(filePath)
+					LoadCSVToDB_CNEP(db, filePath)
 				case strings.Contains(strings.ToLower(file.Name()), "infracao_ibama"):
-					LoadCSVToRedis_AutosInfracaoIbama(filePath)
+					LoadCSVToDB_AutosInfracaoIbama(db, filePath)
 				case strings.Contains(strings.ToLower(file.Name()), "icmbio"):
-					LoadCSVToRedis_AutosInfracaoICMBIO(filePath)
+					LoadCSVToDB_AutosInfracaoICMBIO(db, filePath)
 				case strings.Contains(strings.ToLower(file.Name()), "escravo"):
-					LoadCSVToRedis_TrabalhoEscravo(filePath)
+					LoadCSVToDB_TrabalhoEscravo(db, filePath)
 				case strings.Contains(strings.ToLower(file.Name()), "suspensaibama"):
-					LoadCSVToRedis_Suspensaobama(filePath)
+					LoadCSVToDB_Suspensaobama(db, filePath)
 				case strings.Contains(strings.ToLower(file.Name()), "apreensao"):
-					LoadCSVToRedis_ApreensaoIbama(filePath)
+					LoadCSVToDB_ApreensaoIbama(db, filePath)
 				default:
 					log.Printf("No suitable function for the file %s", filePath)
 				}
@@ -484,4 +639,5 @@ func LoadAllCSVs(dirPath string) {
 		}
 	}
 	wg.Wait()
+
 }

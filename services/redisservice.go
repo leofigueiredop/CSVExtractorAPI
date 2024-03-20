@@ -9,24 +9,60 @@ import (
 	"github.com/go-redis/redis/v8"
 	"log"
 	"strings"
+	"time"
 )
 
 var ctx = context.Background()
 var rdb = redis.NewClient(&redis.Options{
-	Addr:     "localhost:6379",
-	Password: "", // no password set
-	DB:       0,  // use default DB
+	Addr:         "localhost:6380",
+	Password:     "",               // no password set
+	DB:           0,                // use default DB
+	DialTimeout:  60 * time.Second, // tempo de inatividade da configuração da conexão
+	ReadTimeout:  90 * time.Second, // tempo de inatividade da leitura
+	WriteTimeout: 90 * time.Second, // tempo de inatividade da gravação
 })
 var client *redisearch.Client
 
 func init() {
-	sc := redisearch.NewSchema(redisearch.DefaultOptions).
-		AddField(redisearch.NewTextField("CPFCNPJ"))
-	client = redisearch.NewClient("localhost:6379", "cpfCnpj")
 
-	err := client.CreateIndex(sc)
+	//client = redisearch.NewClient("localhost:6380", "cpfCnpj")
+	//
+	//sc := redisearch.NewSchema(redisearch.DefaultOptions).
+	//	AddField(redisearch.NewTextField("CPFCNPJ"))
+	//
+	//client.Drop()
+	//
+	//err := client.CreateIndex(sc)
+	//if err != nil {
+	//	log.Printf("Error creating index: %v", err)
+	//}
+}
+
+func SaveRedis() {
+	// SAVE
+	_, err := rdb.Save(ctx).Result()
 	if err != nil {
-		log.Printf("Error creating index: %v", err)
+		log.Printf("Error creating redis file: %v", err)
+	}
+}
+
+func indexPessoa(pessoa *models.CadastroBasico) {
+	doc := redisearch.NewDocument(pessoa.CPF_CNPJ, 1.0)
+	doc.Set("CPFCNPJ", pessoa.CPF_CNPJ)
+
+	if err := client.IndexOptions(redisearch.DefaultIndexingOptions, doc); err != nil {
+		log.Printf("error indexing document: %v", err)
+	}
+
+	jsonPessoa, err := json.Marshal(pessoa)
+	if err != nil {
+		log.Printf("Unable to marshal object: %v", err)
+		return
+	}
+
+	err = rdb.Set(ctx, "Pessoa:"+pessoa.CPF_CNPJ, jsonPessoa, 0).Err()
+	if err != nil {
+		log.Printf("Unable to save object to Redis: %v", err)
 	}
 }
 
@@ -56,8 +92,7 @@ func indexCEIS(ceis *models.CEIS) {
 	doc := redisearch.NewDocument(ceis.UUID, 1.0)
 	doc.Set("CPFCNPJ", ceis.CPFCNPJSancionado)
 
-	if err := client.IndexOptions(
-		redisearch.DefaultIndexingOptions, doc); err != nil {
+	if err := client.Index(doc); err != nil {
 		log.Printf("error indexing document: %v", err)
 	}
 
@@ -78,8 +113,7 @@ func indexCNEP(cnep *models.CNEP) {
 	doc := redisearch.NewDocument(cnep.UUID, 1.0)
 	doc.Set("CPFCNPJ", cnep.CPFCNPJSancionado)
 
-	if err := client.IndexOptions(
-		redisearch.DefaultIndexingOptions, doc); err != nil {
+	if err := client.Index(doc); err != nil {
 		log.Printf("error indexing document: %v", err)
 	}
 
@@ -198,6 +232,11 @@ func indexApreensaoIbama(apreensaoIbama *models.ApreensaoIbama) {
 		log.Printf("Unable to save object to Redis: %v", err)
 	}
 }
+
+func SearchCadastroBasicoInRedis(key string) ([]models.Result, error) {
+	return searchInRedis(key, "Pessoa")
+}
+
 func SearchPEPInRedis(key string) ([]models.Result, error) {
 	return searchInRedis(key, "PEP")
 }
@@ -232,7 +271,9 @@ func SearchApreensaoIbamaInRedis(key string) ([]models.Result, error) {
 
 func searchInRedis(key string, prefix string) ([]models.Result, error) {
 	// search in RediSearch index
-	query := redisearch.NewQuery(fmt.Sprintf(`@CPFCNPJ:"*%s*"`, key))
+
+	log.Printf(fmt.Sprintf(`@CPFCNPJ:%s*`, key))
+	query := redisearch.NewQuery(key)
 	docs, _, err := client.Search(query)
 
 	if err != nil {
