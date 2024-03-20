@@ -3,6 +3,7 @@ package services
 import (
 	"CSVExtractor/models"
 	"encoding/csv"
+	"encoding/json"
 	"fmt"
 	"github.com/google/uuid"
 	"io"
@@ -581,5 +582,139 @@ func LoadCSVToMemory_CB(filePath string, outputFilePath string) {
 				}
 			}
 		}
+	}
+}
+
+func LoadCSVToMemory_CB_JSON(filePath string, outputFilePath string) {
+	file, err := os.Open(filePath)
+	if err != nil {
+		log.Fatalf("Unable to read input file: %s", err)
+	}
+	defer file.Close()
+
+	csvReader := csv.NewReader(file)
+	csvReader.Comma = ';'
+
+	outputFile, err := os.Create(outputFilePath)
+	if err != nil {
+		log.Fatalf("Unable to create output file: %s", err)
+	}
+	defer outputFile.Close()
+
+	var wg sync.WaitGroup
+	resultChannel := make(chan map[string]interface{})
+
+	for {
+		record, err := csvReader.Read()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			log.Fatalf("Error reading CSV file: %s", err)
+		}
+
+		tipoPessoa := record[0]
+		cpfCnpj := record[1]
+		wg.Add(8)
+
+		go func() {
+			defer wg.Done()
+			if tipoPessoa == "PF" {
+				re := regexp.MustCompile("[0-9]+")
+				cpfCnpj := "***." + string(re.Find([]byte(record[1]))) + "-**"
+				if peps, ok := pepData[cpfCnpj]; ok {
+					resultChannel <- map[string]interface{}{
+						"TipoPessoa": tipoPessoa,
+						"CPFCNPJ":    cpfCnpj,
+						"PEP":        peps,
+					}
+				}
+			}
+		}()
+		go func() {
+			defer wg.Done()
+			if ceis, ok := ceisData[cpfCnpj]; ok {
+				resultChannel <- map[string]interface{}{
+					"TipoPessoa": tipoPessoa,
+					"CPFCNPJ":    cpfCnpj,
+					"CEIS":       ceis,
+				}
+			}
+		}()
+		go func() {
+			defer wg.Done()
+			if cnep, ok := cnepData[cpfCnpj]; ok {
+				resultChannel <- map[string]interface{}{
+					"TipoPessoa": tipoPessoa,
+					"CPFCNPJ":    cpfCnpj,
+					"CNEP":       cnep,
+				}
+			}
+		}()
+		go func() {
+			defer wg.Done()
+			if aiibama, ok := autosInfracaoIbamaData[cpfCnpj]; ok {
+				resultChannel <- map[string]interface{}{
+					"TipoPessoa":           tipoPessoa,
+					"CPFCNPJ":              cpfCnpj,
+					"AUTOS_INFRACAO_IBAMA": aiibama,
+				}
+			}
+		}()
+		go func() {
+			defer wg.Done()
+			if aiicmbio, ok := autosInfracaoICMBIOData[cpfCnpj]; ok {
+				resultChannel <- map[string]interface{}{
+					"TipoPessoa":            tipoPessoa,
+					"CPFCNPJ":               cpfCnpj,
+					"AUTOS_INFRACAO_ICMBIO": aiicmbio,
+				}
+			}
+		}()
+		go func() {
+			defer wg.Done()
+			if te, ok := trabalhoEscravoData[cpfCnpj]; ok {
+				resultChannel <- map[string]interface{}{
+					"TipoPessoa":       tipoPessoa,
+					"CPFCNPJ":          cpfCnpj,
+					"TRABALHO_ESCRAVO": te,
+				}
+			}
+		}()
+		go func() {
+			defer wg.Done()
+			if sb, ok := suspensaobamaData[cpfCnpj]; ok {
+				resultChannel <- map[string]interface{}{
+					"TipoPessoa":      tipoPessoa,
+					"CPFCNPJ":         cpfCnpj,
+					"SUSPENSAO_IBAMA": sb,
+				}
+			}
+		}()
+		go func() {
+			defer wg.Done()
+			if ai, ok := apreensaoIbamaData[cpfCnpj]; ok {
+				resultChannel <- map[string]interface{}{
+					"TipoPessoa":      tipoPessoa,
+					"CPFCNPJ":         cpfCnpj,
+					"APREENSAO_IBAMA": ai,
+				}
+			}
+		}()
+
+		wg.Wait()
+		close(resultChannel)
+
+		jsonData := make([]map[string]interface{}, 0)
+		for result := range resultChannel {
+			jsonData = append(jsonData, result)
+		}
+
+		jsonBytes, err := json.Marshal(jsonData)
+		if err != nil {
+			log.Fatalf("Error marshaling JSON: %s", err)
+		}
+
+		outputFile.Write(jsonBytes)
 	}
 }
