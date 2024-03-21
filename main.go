@@ -22,11 +22,15 @@ func main() {
 	log.SetOutput(mw)
 
 	// Carregue todos os arquivos CSV relacionados na memória
-	services.LoadAllCSVs("files")
+	//services.LoadAllCSVs("files")
 
 	// Carregue o arquivo "Cadastro Básico" CSV na memória e gere o arquivo JSON
-	outputJSONFilePath := "path-to-your-output-directory/output.json"
-	services.LoadCSVToMemory_CB("files/AILOSDB/BASE_AILOS.csv", outputJSONFilePath)
+	//outputJSONFilePath := "resultEmpresas.json"
+	//services.LoadCSVToMemory_CB_JSON("files/AILOSDB/BASE_AILOS.csv", outputJSONFilePath)
+
+	services.LoadAll("files/AILOSDB/BASE_AILOS.csv")
+
+	services.ExportJSON("resultEmpresas.json")
 
 	log.Println("FINALIZOU")
 

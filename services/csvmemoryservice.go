@@ -4,7 +4,6 @@ import (
 	"CSVExtractor/models"
 	"encoding/csv"
 	"encoding/json"
-	"fmt"
 	"github.com/google/uuid"
 	"io"
 	"log"
@@ -483,107 +482,6 @@ func LoadAllCSVs(dirPath string) {
 	}
 	wg.Wait()
 }
-func LoadCSVToMemory_CB(filePath string, outputFilePath string) {
-	file, err := os.Open(filePath)
-	if err != nil {
-		log.Fatalf("Unable to read input file: %s", err)
-	}
-	defer file.Close()
-
-	csvReader := csv.NewReader(file)
-	csvReader.Comma = ';'
-
-	outputFile, err := os.Create(outputFilePath)
-	if err != nil {
-		log.Fatalf("Unable to create output file: %s", err)
-	}
-	defer outputFile.Close()
-
-	csvWriter := csv.NewWriter(outputFile)
-	defer csvWriter.Flush()
-
-	var wg sync.WaitGroup
-	resultChannel := make(chan interface{})
-
-	for {
-		record, err := csvReader.Read()
-		if err == io.EOF {
-			break
-		}
-		if err != nil {
-			log.Fatalf("Error reading CSV file: %s", err)
-		}
-
-		cpfCnpj := record[1]
-		wg.Add(8)
-
-		go func() {
-			defer wg.Done()
-			if record[0] == "PF" {
-				re := regexp.MustCompile("[0-9]+")
-				cpfCnpj := "***." + string(re.Find([]byte(record[1]))) + "-**"
-				if peps, ok := pepData[cpfCnpj]; ok {
-					resultChannel <- peps
-				}
-			}
-		}()
-		go func() {
-			defer wg.Done()
-			if ceis, ok := ceisData[cpfCnpj]; ok {
-				resultChannel <- ceis
-			}
-		}()
-		go func() {
-			defer wg.Done()
-			if cnep, ok := cnepData[cpfCnpj]; ok {
-				resultChannel <- cnep
-			}
-		}()
-		go func() {
-			defer wg.Done()
-			if aiibama, ok := autosInfracaoIbamaData[cpfCnpj]; ok {
-				resultChannel <- aiibama
-			}
-		}()
-		go func() {
-			defer wg.Done()
-			if aiicmbio, ok := autosInfracaoICMBIOData[cpfCnpj]; ok {
-				resultChannel <- aiicmbio
-			}
-		}()
-		go func() {
-			defer wg.Done()
-			if te, ok := trabalhoEscravoData[cpfCnpj]; ok {
-				resultChannel <- te
-			}
-		}()
-		go func() {
-			defer wg.Done()
-			if sb, ok := suspensaobamaData[cpfCnpj]; ok {
-				resultChannel <- sb
-			}
-		}()
-		go func() {
-			defer wg.Done()
-			if ai, ok := apreensaoIbamaData[cpfCnpj]; ok {
-				resultChannel <- ai
-			}
-		}()
-
-		wg.Wait()
-		close(resultChannel)
-
-		for result := range resultChannel {
-			if result != nil {
-				resultString := fmt.Sprintf("%v", result)
-				err := csvWriter.Write([]string{cpfCnpj, resultString})
-				if err != nil {
-					log.Fatalf("Error writing to CSV file: %s", err)
-				}
-			}
-		}
-	}
-}
 
 func LoadCSVToMemory_CB_JSON(filePath string, outputFilePath string) {
 	file, err := os.Open(filePath)
@@ -601,9 +499,13 @@ func LoadCSVToMemory_CB_JSON(filePath string, outputFilePath string) {
 	}
 	defer outputFile.Close()
 
-	var wg sync.WaitGroup
-	resultChannel := make(chan map[string]interface{})
+	// add the opening bracket at the beginning of the file
+	_, err = outputFile.WriteString("[")
+	if err != nil {
+		log.Fatalf("Error writing to output file: %s", err)
+	}
 
+	isFirst := true
 	for {
 		record, err := csvReader.Read()
 		if err == io.EOF {
@@ -615,106 +517,230 @@ func LoadCSVToMemory_CB_JSON(filePath string, outputFilePath string) {
 
 		tipoPessoa := record[0]
 		cpfCnpj := record[1]
+
+		var pep []models.PEP
+		var ceis []models.CEIS
+		var cnep []models.CNEP
+		var aiibama []models.AutosInfracaoIbama
+		var aiicmbio []models.AutosInfracaoICMBIO
+		var te []models.TrabalhoEscravo
+		var sb []models.Suspensaobama
+		var ai []models.ApreensaoIbama
+
+		var wg sync.WaitGroup
+
 		wg.Add(8)
 
 		go func() {
 			defer wg.Done()
 			if tipoPessoa == "PF" {
 				re := regexp.MustCompile("[0-9]+")
-				cpfCnpj := "***." + string(re.Find([]byte(record[1]))) + "-**"
-				if peps, ok := pepData[cpfCnpj]; ok {
-					resultChannel <- map[string]interface{}{
-						"TipoPessoa": tipoPessoa,
-						"CPFCNPJ":    cpfCnpj,
-						"PEP":        peps,
-					}
-				}
+				cpfCnpjAux := "***." + string(re.Find([]byte(record[1]))) + "-**"
+				pep = pepData[cpfCnpjAux]
 			}
 		}()
+
 		go func() {
 			defer wg.Done()
-			if ceis, ok := ceisData[cpfCnpj]; ok {
-				resultChannel <- map[string]interface{}{
-					"TipoPessoa": tipoPessoa,
-					"CPFCNPJ":    cpfCnpj,
-					"CEIS":       ceis,
-				}
-			}
+			ceis = ceisData[cpfCnpj]
 		}()
+
 		go func() {
 			defer wg.Done()
-			if cnep, ok := cnepData[cpfCnpj]; ok {
-				resultChannel <- map[string]interface{}{
-					"TipoPessoa": tipoPessoa,
-					"CPFCNPJ":    cpfCnpj,
-					"CNEP":       cnep,
-				}
-			}
+			cnep = cnepData[cpfCnpj]
 		}()
+
 		go func() {
 			defer wg.Done()
-			if aiibama, ok := autosInfracaoIbamaData[cpfCnpj]; ok {
-				resultChannel <- map[string]interface{}{
-					"TipoPessoa":           tipoPessoa,
-					"CPFCNPJ":              cpfCnpj,
-					"AUTOS_INFRACAO_IBAMA": aiibama,
-				}
-			}
+			aiibama = autosInfracaoIbamaData[cpfCnpj]
 		}()
+
 		go func() {
 			defer wg.Done()
-			if aiicmbio, ok := autosInfracaoICMBIOData[cpfCnpj]; ok {
-				resultChannel <- map[string]interface{}{
-					"TipoPessoa":            tipoPessoa,
-					"CPFCNPJ":               cpfCnpj,
-					"AUTOS_INFRACAO_ICMBIO": aiicmbio,
-				}
-			}
+			aiicmbio = autosInfracaoICMBIOData[cpfCnpj]
 		}()
+
 		go func() {
 			defer wg.Done()
-			if te, ok := trabalhoEscravoData[cpfCnpj]; ok {
-				resultChannel <- map[string]interface{}{
-					"TipoPessoa":       tipoPessoa,
-					"CPFCNPJ":          cpfCnpj,
-					"TRABALHO_ESCRAVO": te,
-				}
-			}
+			te = trabalhoEscravoData[cpfCnpj]
 		}()
+
 		go func() {
 			defer wg.Done()
-			if sb, ok := suspensaobamaData[cpfCnpj]; ok {
-				resultChannel <- map[string]interface{}{
-					"TipoPessoa":      tipoPessoa,
-					"CPFCNPJ":         cpfCnpj,
-					"SUSPENSAO_IBAMA": sb,
-				}
-			}
+			sb = suspensaobamaData[cpfCnpj]
 		}()
+
 		go func() {
 			defer wg.Done()
-			if ai, ok := apreensaoIbamaData[cpfCnpj]; ok {
-				resultChannel <- map[string]interface{}{
-					"TipoPessoa":      tipoPessoa,
-					"CPFCNPJ":         cpfCnpj,
-					"APREENSAO_IBAMA": ai,
-				}
-			}
+			ai = apreensaoIbamaData[cpfCnpj]
 		}()
 
 		wg.Wait()
-		close(resultChannel)
 
-		jsonData := make([]map[string]interface{}, 0)
-		for result := range resultChannel {
-			jsonData = append(jsonData, result)
+		// checks if all objects are nil or not
+		if pep == nil && ceis == nil && cnep == nil && aiibama == nil && aiicmbio == nil && te == nil && sb == nil && ai == nil {
+			continue
 		}
 
-		jsonBytes, err := json.Marshal(jsonData)
+		result := map[string]interface{}{
+			"TipoPessoa":            tipoPessoa,
+			"CPFCNPJ":               cpfCnpj,
+			"PEP":                   pep,
+			"CEIS":                  ceis,
+			"CNEP":                  cnep,
+			"AUTOS_INFRACAO_IBAMA":  aiibama,
+			"AUTOS_INFRACAO_ICMBIO": aiicmbio,
+			"TRABALHO_ESCRAVO":      te,
+			"SUSPENSAO_IBAMA":       sb,
+			"APREENSAO_IBAMA":       ai,
+		}
+
+		jsonResult, err := json.Marshal(result)
 		if err != nil {
 			log.Fatalf("Error marshaling JSON: %s", err)
 		}
 
-		outputFile.Write(jsonBytes)
+		// add a comma before every record except the first one
+		if !isFirst {
+			_, err = outputFile.WriteString(",")
+			if err != nil {
+				log.Fatalf("Error writing to output file: %s", err)
+			}
+		} else {
+			isFirst = false
+		}
+
+		_, err = outputFile.Write(jsonResult)
+		if err != nil {
+			log.Fatalf("Error writing to output file: %s", err)
+		}
+
+		_, err = outputFile.WriteString("\n")
+		if err != nil {
+			log.Fatalf("Error writing to output file: %s", err)
+		}
+	}
+
+	// add the closing bracket at the end of the file
+	_, err = outputFile.WriteString("]")
+	if err != nil {
+		log.Fatalf("Error writing to output file: %s", err)
 	}
 }
+
+//func LoadCSVToMemory_CB_JSON(filePath string, outputFilePath string) {
+//	file, err := os.Open(filePath)
+//	if err != nil {
+//		log.Fatalf("Unable to read input file: %s", err)
+//	}
+//	defer file.Close()
+//
+//	csvReader := csv.NewReader(file)
+//	csvReader.Comma = ';'
+//
+//	outputFile, err := os.Create(outputFilePath)
+//	if err != nil {
+//		log.Fatalf("Unable to create output file: %s", err)
+//	}
+//	defer outputFile.Close()
+//
+//	for {
+//		record, err := csvReader.Read()
+//		if err == io.EOF {
+//			break
+//		}
+//		if err != nil {
+//			log.Fatalf("Error reading CSV file: %s", err)
+//		}
+//
+//		tipoPessoa := record[0]
+//		cpfCnpj := record[1]
+//
+//		var pep []models.PEP
+//		var ceis []models.CEIS
+//		var cnep []models.CNEP
+//		var aiibama []models.AutosInfracaoIbama
+//		var aiicmbio []models.AutosInfracaoICMBIO
+//		var te []models.TrabalhoEscravo
+//		var sb []models.Suspensaobama
+//		var ai []models.ApreensaoIbama
+//
+//		var wg sync.WaitGroup
+//
+//		wg.Add(8)
+//
+//		go func() {
+//			defer wg.Done()
+//			if tipoPessoa == "PF" {
+//				re := regexp.MustCompile("[0-9]+")
+//				cpfCnpj := "***." + string(re.Find([]byte(record[1]))) + "-**"
+//				pep = pepData[cpfCnpj]
+//			}
+//		}()
+//
+//		go func() {
+//			defer wg.Done()
+//			ceis = ceisData[cpfCnpj]
+//		}()
+//
+//		go func() {
+//			defer wg.Done()
+//			cnep = cnepData[cpfCnpj]
+//		}()
+//
+//		go func() {
+//			defer wg.Done()
+//			aiibama = autosInfracaoIbamaData[cpfCnpj]
+//		}()
+//
+//		go func() {
+//			defer wg.Done()
+//			aiicmbio = autosInfracaoICMBIOData[cpfCnpj]
+//		}()
+//
+//		go func() {
+//			defer wg.Done()
+//			te = trabalhoEscravoData[cpfCnpj]
+//		}()
+//
+//		go func() {
+//			defer wg.Done()
+//			sb = suspensaobamaData[cpfCnpj]
+//		}()
+//
+//		go func() {
+//			defer wg.Done()
+//			ai = apreensaoIbamaData[cpfCnpj]
+//		}()
+//
+//		wg.Wait()
+//
+//		result := map[string]interface{}{
+//			"TipoPessoa":            tipoPessoa,
+//			"CPFCNPJ":               cpfCnpj,
+//			"PEP":                   pep,
+//			"CEIS":                  ceis,
+//			"CNEP":                  cnep,
+//			"AUTOS_INFRACAO_IBAMA":  aiibama,
+//			"AUTOS_INFRACAO_ICMBIO": aiicmbio,
+//			"TRABALHO_ESCRAVO":      te,
+//			"SUSPENSAO_IBAMA":       sb,
+//			"APREENSAO_IBAMA":       ai,
+//		}
+//
+//		jsonResult, err := json.Marshal(result)
+//		if err != nil {
+//			log.Fatalf("Error marshaling JSON: %s", err)
+//		}
+//
+//		_, err = outputFile.Write(jsonResult)
+//		if err != nil {
+//			log.Fatalf("Error writing to output file: %s", err)
+//		}
+//
+//		_, err = outputFile.WriteString("\n")
+//		if err != nil {
+//			log.Fatalf("Error writing to output file: %s", err)
+//		}
+//	}
+//}
