@@ -8,8 +8,6 @@ import (
 	"io"
 	"log"
 	"os"
-	"path/filepath"
-	"strings"
 	"sync"
 )
 
@@ -46,45 +44,63 @@ func LoadPessoas(filePath string) error {
 			isFirstRow = false
 			continue
 		}
-
-		cnpj := record[1][:8] // CNPJ base is the first 8 characters
-		pessoa := models.Pessoa{
-			Tipo_pessoa: record[0],
-			CPF_CNPJ:    cnpj,
+		if len(record) < 2 {
+			log.Println("Invalid record:", record)
+			continue
 		}
+		tipoPessoa := record[0]
 
-		Pessoas[cnpj] = pessoa
+		if tipoPessoa == "PJ" {
+			cnpj := record[1]
+
+			// Ensure cnpj is 8+ digits, pad with leading zeros if not
+			cnpjFormatted := fmt.Sprintf("%014s", cnpj) // let's format CNPJ to have 14 characters, filling with zeros at left if needed
+
+			cnpjBase := cnpjFormatted[:8]
+
+			pessoa := models.Pessoa{
+				Tipo_pessoa: tipoPessoa,
+				CPF_CNPJ:    cnpjBase,
+			}
+
+			Pessoas[cnpjBase] = pessoa
+		}
 	}
 
 	return nil
 }
 
-func LoadEmpresas() error {
-	return filepath.Walk("PJ/", func(path string, info os.FileInfo, err error) error {
-		if !info.IsDir() {
-			if strings.HasSuffix(path, ".EMPRECSV") {
-				err := loadEmpresa(path)
-				if err != nil {
-					return err
-				}
-			}
+func LoadEmpresas() {
+	files, err := os.ReadDir("files/PJ/empresas")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	for _, file := range files {
+		err := loadEmpresa("files/PJ/empresas/" + file.Name())
+		if err != nil {
+			log.Fatalf("Error reading empresa CSV file "+file.Name()+": %s", err)
 		}
-		return nil
-	})
+
+		fmt.Println("Finished file " + file.Name())
+	}
 }
 
-func LoadEstabelecimentos() error {
-	return filepath.Walk("PJ/", func(path string, info os.FileInfo, err error) error {
-		if !info.IsDir() {
-			if strings.HasSuffix(path, ".ESTABELE") {
-				err := loadEstabelecimento(path)
-				if err != nil {
-					return err
-				}
-			}
+func LoadEstabelecimentos() {
+	files, err := os.ReadDir("files/PJ/estabele")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	for _, file := range files {
+
+		err := loadEstabelecimento("files/PJ/estabele/" + file.Name())
+		if err != nil {
+			log.Fatalf("Error reading estabele CSV file "+file.Name()+": %s", err)
 		}
-		return nil
-	})
+
+		fmt.Println("Finished file " + file.Name())
+	}
 }
 
 func loadEmpresa(filePath string) error {
@@ -109,7 +125,9 @@ func loadEmpresa(filePath string) error {
 		}
 
 		cnpjBase := record[0]
+
 		if _, exists := Pessoas[cnpjBase]; exists {
+
 			Empresas[cnpjBase] = append(Empresas[cnpjBase], models.Empresa{
 				CnpjBase:       cnpjBase,
 				RazaoSocial:    record[1],
@@ -119,6 +137,7 @@ func loadEmpresa(filePath string) error {
 				Porte:          record[5],
 				EnteFederativo: record[6],
 			})
+
 		}
 	}
 
@@ -147,7 +166,9 @@ func loadEstabelecimento(filePath string) error {
 		}
 
 		cnpjBase := record[0]
+
 		if _, exists := Pessoas[cnpjBase]; exists {
+
 			Estabelecimentos[cnpjBase] = append(Estabelecimentos[cnpjBase], models.Estabelecimento{
 				CnpjBase:             record[0],
 				CnpjOrdem:            record[1],
@@ -180,6 +201,7 @@ func loadEstabelecimento(filePath string) error {
 				SituacaoEspecial:     record[28],
 				DataSituacaoEspecial: record[29],
 			})
+
 		}
 	}
 
@@ -198,18 +220,15 @@ func LoadAll(filePath string) {
 
 	go func() {
 		defer wg.Done()
-		err = LoadEmpresas()
-		if err != nil {
-			log.Fatal("Unable to load empresas: ", err)
-		}
+
+		LoadEmpresas()
+
 	}()
 
 	go func() {
 		defer wg.Done()
-		err = LoadEstabelecimentos()
-		if err != nil {
-			log.Fatal("Unable to load estabelecimentos: ", err)
-		}
+		LoadEstabelecimentos()
+
 	}()
 
 	wg.Wait()
@@ -217,20 +236,45 @@ func LoadAll(filePath string) {
 }
 
 func ExportJSON(outputFilePath string) {
+	log.Println("Start exporting JSON data...")
+
+	log.Printf("Number of pessoas: %d\n", len(Pessoas))
+
+	// Abrindo arquivo de saída
 	outputFile, err := os.Create(outputFilePath)
 	if err != nil {
 		log.Fatalf("Could not create output file: %v", err)
 	}
 	defer outputFile.Close()
 
+	// Configurando o encoder JSON
 	encoder := json.NewEncoder(outputFile)
 	encoder.SetIndent("", "  ")
 
+	// Criando um slice para armazenar todas as pessoas
+	allPessoas := make([]models.Pessoa, 0, len(Pessoas))
+
+	// Iterando sobre cada pessoa
 	for _, pessoa := range Pessoas {
-		if err := encoder.Encode(pessoa); err != nil {
-			log.Printf("Could not encode persona: %v, err: %v", pessoa, err)
+		log.Printf("Exporting pessoa with CPF/CNPJ: %s\n", pessoa.CPF_CNPJ)
+
+		// Associando empresas e estabelecimentos à pessoa
+		empresas := Empresas[pessoa.CPF_CNPJ]
+		for i := range empresas {
+			empresa := &empresas[i]
+			empresa.Estabelecimentos = Estabelecimentos[empresa.CnpjBase]
 		}
+		pessoa.Empresas = empresas
+
+		// Adicionando a pessoa ao slice
+		allPessoas = append(allPessoas, pessoa)
 	}
 
-	fmt.Println("Data has been successfully written to", outputFilePath)
+	// Codificando e escrevendo todas as pessoas no arquivo de saída
+	if err := encoder.Encode(allPessoas); err != nil {
+		log.Printf("Could not encode pessoas: %v", err)
+	}
+
+	log.Println("Finished exporting JSON data.")
+	log.Println("Data has been successfully written to", outputFilePath)
 }
