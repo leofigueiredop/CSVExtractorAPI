@@ -5,7 +5,6 @@ import (
 	"encoding/csv"
 	"encoding/json"
 	"fmt"
-	"golang.org/x/text/encoding/charmap"
 	"io"
 	"log"
 	"os"
@@ -16,67 +15,8 @@ var (
 	Pessoas          = make(map[string]models.Pessoa)            // map with key: CPF/CNPJ
 	Empresas         = make(map[string][]models.Empresa)         // map with key: CNPJ Base
 	Estabelecimentos = make(map[string][]models.Estabelecimento) // map with key: CNPJ Base
-
 )
-var Naturezas = make(map[string]string)       // map with key: natureza code
-var Qualificacoes = make(map[string]string)   // map with key: qualificacao code
-var MotivosSituacao = make(map[string]string) // map with key: motivo situacao code
-var Municipios = make(map[string]string)      // map with key: municipio code
 
-func LoadTranslationMaps(naturezaPath, qualificacaoPath, motivoPath, municipioPath string) error {
-
-	var err error
-
-	Naturezas, err = loadCsvToMap(naturezaPath)
-	if err != nil {
-		return err
-	}
-	Qualificacoes, err = loadCsvToMap(qualificacaoPath)
-	if err != nil {
-		return err
-	}
-	MotivosSituacao, err = loadCsvToMap(motivoPath)
-	if err != nil {
-		return err
-	}
-	Municipios, err = loadCsvToMap(municipioPath)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func loadCsvToMap(filePath string) (map[string]string, error) {
-	csvMap := make(map[string]string)
-	file, err := os.Open(filePath)
-
-	if err != nil {
-		return nil, err
-	}
-
-	defer file.Close()
-
-	dr := charmap.Windows1252.NewDecoder().Reader(file)
-	csvReader := csv.NewReader(dr)
-	csvReader.Comma = ';' // Define separator as semicolon
-	csvReader.LazyQuotes = true
-
-	for {
-		record, err := csvReader.Read()
-
-		if err == io.EOF {
-			break
-		}
-
-		if err != nil {
-			return nil, err
-		}
-
-		csvMap[record[0]] = record[1]
-	}
-
-	return csvMap, nil
-}
 func LoadPessoas(filePath string) error {
 	file, err := os.Open(filePath)
 	if err != nil {
@@ -191,8 +131,8 @@ func loadEmpresa(filePath string) error {
 			Empresas[cnpjBase] = append(Empresas[cnpjBase], models.Empresa{
 				CnpjBase:       cnpjBase,
 				RazaoSocial:    record[1],
-				Natureza:       Naturezas[record[2]],
-				Qualificacao:   Qualificacoes[record[3]],
+				Natureza:       record[2],
+				Qualificacao:   record[3],
 				CapitalSocial:  record[4],
 				Porte:          record[5],
 				EnteFederativo: record[6],
@@ -237,7 +177,7 @@ func loadEstabelecimento(filePath string) error {
 				NomeFantasia:         record[4],
 				SituacaoCadastral:    record[5],
 				DataSituacao:         record[6],
-				MotivoSituacao:       MotivosSituacao[record[7]],
+				MotivoSituacao:       record[7],
 				CidadeExterior:       record[8],
 				Pais:                 record[9],
 				DataInicioAtividade:  record[10],
@@ -250,7 +190,7 @@ func loadEstabelecimento(filePath string) error {
 				Bairro:               record[17],
 				Cep:                  record[18],
 				Uf:                   record[19],
-				Municipio:            Municipios[record[20]],
+				Municipio:            record[20],
 				Ddd1:                 record[21],
 				Telefone1:            record[22],
 				Ddd2:                 record[23],
@@ -274,12 +214,6 @@ func LoadAll(filePath string) {
 		log.Fatal("Unable to load pessoas: ", err)
 	}
 
-	err = LoadTranslationMaps("files/PJ/F.K03200$Z.D40309.NATJUCSV", "files/PJ/F.K03200$Z.D40309.QUALSCSV",
-		"files/PJ/F.K03200$Z.D40309.MOTICSV", "files/PJ/F.K03200$Z.D40309.MUNICCSV")
-
-	if err != nil {
-		log.Fatal("Unable to load translation maps: ", err)
-	}
 	var wg sync.WaitGroup
 
 	wg.Add(2)
@@ -301,46 +235,92 @@ func LoadAll(filePath string) {
 	fmt.Println("All data loaded successfully")
 }
 
+//func ExportJSON(outputFilePath string) {
+//
+//	log.Println(" Empresas ", len(Empresas))
+//	log.Println(" Estabelecimentos ", len(Estabelecimentos))
+//	log.Println(" Pessoas ", len(Pessoas))
+//
+//	outputFileEmp, errEmp := os.Create("emp.json")
+//	if errEmp != nil {
+//		log.Fatalf("Could not create output file: %v", errEmp)
+//	}
+//	defer outputFileEmp.Close()
+//
+//	encoder := json.NewEncoder(outputFileEmp)
+//	encoder.SetIndent("", "  ")
+//
+//	// Encode the JSON array and write it to the output file
+//	if err := encoder.Encode(Empresas); err != nil {
+//		log.Fatalf("Could not encode JSON data: %v", err)
+//	}
+//
+//	outputFileEst, errEST := os.Create("EST.json")
+//	if errEST != nil {
+//		log.Fatalf("Could not create output file: %v", errEST)
+//	}
+//	defer outputFileEst.Close()
+//
+//	encoder = json.NewEncoder(outputFileEst)
+//	encoder.SetIndent("", "  ")
+//
+//	// Encode the JSON array and write it to the output file
+//	if err := encoder.Encode(Estabelecimentos); err != nil {
+//		log.Fatalf("Could not encode JSON data: %v", err)
+//	}
+//
+//	fmt.Println("Data has been successfully written to", outputFilePath)
+//}
+
 func ExportJSON(outputFilePath string) {
-	log.Println("Start exporting JSON data...")
 
-	log.Printf("Number of pessoas: %d\n", len(Pessoas))
+	log.Println(" Empresas ", len(Empresas))
+	log.Println(" Estabelecimentos ", len(Estabelecimentos))
+	log.Println(" Pessoas ", len(Pessoas))
 
-	// Abrindo arquivo de saída
 	outputFile, err := os.Create(outputFilePath)
 	if err != nil {
 		log.Fatalf("Could not create output file: %v", err)
 	}
 	defer outputFile.Close()
 
-	// Configurando o encoder JSON
 	encoder := json.NewEncoder(outputFile)
 	encoder.SetIndent("", "  ")
 
-	// Criando um slice para armazenar todas as pessoas
-	allPessoas := make([]models.Pessoa, 0, len(Pessoas))
-
-	// Iterando sobre cada pessoa
+	// Iterate over each person
 	for _, pessoa := range Pessoas {
-		log.Printf("Exporting pessoa with CPF/CNPJ: %s\n", pessoa.CPF_CNPJ)
-
-		// Associando empresas e estabelecimentos à pessoa
-		empresas := Empresas[pessoa.CPF_CNPJ]
-		for i := range empresas {
-			empresa := &empresas[i]
+		// Iterate over each company associated with the person
+		for _, empresa := range Empresas[pessoa.CPF_CNPJ] {
+			// Add establishments to the company
 			empresa.Estabelecimentos = Estabelecimentos[empresa.CnpjBase]
+
 		}
-		pessoa.Empresas = empresas
+		pessoa.Empresas = Empresas[pessoa.CPF_CNPJ]
 
-		// Adicionando a pessoa ao slice
-		allPessoas = append(allPessoas, pessoa)
 	}
 
-	// Codificando e escrevendo todas as pessoas no arquivo de saída
-	if err := encoder.Encode(allPessoas); err != nil {
-		log.Printf("Could not encode pessoas: %v", err)
+	// Encode the JSON array and write it to the output file
+	if err := encoder.Encode(Pessoas); err != nil {
+		log.Fatalf("Could not encode JSON data: %v", err)
 	}
 
-	log.Println("Finished exporting JSON data.")
-	log.Println("Data has been successfully written to", outputFilePath)
+	fmt.Println("Data has been successfully written to", outputFilePath)
+}
+
+// structToMap converts a struct to a map[string]interface{}
+func structToMap(data interface{}) map[string]interface{} {
+	var result map[string]interface{}
+
+	// Convert the struct to JSON
+	jsonData, err := json.Marshal(data)
+	if err != nil {
+		log.Fatalf("Error marshaling JSON: %v", err)
+	}
+
+	// Unmarshal the JSON into a map
+	if err := json.Unmarshal(jsonData, &result); err != nil {
+		log.Fatalf("Error unmarshaling JSON: %v", err)
+	}
+
+	return result
 }

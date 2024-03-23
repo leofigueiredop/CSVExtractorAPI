@@ -1,0 +1,61 @@
+package services
+
+import (
+	"fmt"
+	"io"
+	"net/http"
+	"strings"
+
+	"github.com/PuerkitoBio/goquery"
+)
+
+func CheckCPF() {
+	// Set your URL and headers
+	url := "https://www.situacao-cadastral.com/"
+	headers := map[string]string{
+		"Content-Type":              "application/x-www-form-urlencoded",
+		"user-agent":                getRandomUserAgent(),
+		"upgrade-insecure-requests": "1",
+		"origin":                    "https://www.situacao-cadastral.com",
+		"referer":                   "https://www.situacao-cadastral.com/",
+		"sec-fetch-user":            "?1",
+		"accept":                    "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3",
+		"accept-encoding":           "gzip, deflate, br",
+		"accept-language":           "en-US,en;q=0.9,en;q=0.8",
+	}
+	// Simulate JavaScript's bypass token logic here
+	bypassToken := "<your-bypass-token>"
+
+	// Prepare HTTP client
+	client := &http.Client{}
+	data := url.Values{}
+	data.Set("doc", "<documentId>")
+	data.Set("1ff1de774005f8da13f42943881c655f", bypassToken)
+
+	req, _ := http.NewRequest("POST", url, strings.NewReader(data.Encode()))
+
+	// Add headers
+	for k, v := range headers {
+		req.Header.Set(k, v)
+	}
+
+	// Send the request and check for errors
+	response, err := client.Do(req)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer response.Body.Close()
+
+	// Create a goquery document from the HTTP response
+	document, err := goquery.NewDocumentFromReader(io.Reader(response.Body))
+	if err != nil {
+		fmt.Println("Error loading HTTP response body. ", err)
+		return
+	}
+
+	// Find and print required elements
+	document.Find("span").Each(func(index int, element *goquery.Selection) {
+		fmt.Println(element.Text())
+	})
+}
