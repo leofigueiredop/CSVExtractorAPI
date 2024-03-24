@@ -1,0 +1,882 @@
+package services
+
+import (
+	"CSVExtractor/models"
+	"encoding/csv"
+	"encoding/json"
+	"fmt"
+	"github.com/google/uuid"
+	"io"
+	"log"
+	"os"
+	"path/filepath"
+	"regexp"
+	"strings"
+	"sync"
+)
+
+var (
+	result                  = make(map[string]models.RESULTAMBIENTAL) // map with key: CPF/CNPJ
+	autoInfracaoIbamaData   = make(map[string][]models.AutosInfracaoIbama)
+	suspensaoIbamaData      = make(map[string][]models.SuspensaoIbama)
+	apreensaoIbamaData      = make(map[string][]models.ApreensaoIbama)
+	areaEmbargadaIbamaData  = make(map[string][]models.AreaEmbargadaIbama)
+	infracaoIbamaData       = make(map[string][]models.InfracaoIbama)
+	autosInfracaoICMBIOData = make(map[string][]models.AutosInfracaoICMBIO)
+	embargoICMBIOData       = make(map[string][]models.EmbargoICMBIO)
+)
+
+type empresa struct {
+	CNPJ      string                   `json:"cnpj"`
+	Registros []models.RESULTAMBIENTAL `json:"registros"`
+}
+
+var empresas []empresa
+
+func ProcessaInfracoesAmbientaisIbama(filePath string) {
+	file, err := os.Open(filePath)
+	if err != nil {
+		log.Println("Unable to read input file ", filePath, ". Error: ", err)
+		return
+	}
+	defer file.Close()
+
+	reader := csv.NewReader(file)
+	reader.Comma = ';'
+	reader.LazyQuotes = true
+	reader.FieldsPerRecord = -1
+
+	isFirstRow := true
+	for {
+		record, err := reader.Read()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			log.Println("Error reading the file records: ", err)
+			continue
+		}
+
+		// Skip the header
+		if isFirstRow {
+			isFirstRow = false
+			continue
+		}
+		if len(record) < 2 {
+			log.Println("Invalid record:", record)
+			continue
+		}
+		tipoPessoa := record[0]
+
+		if tipoPessoa == "PJ" {
+			cnpj := record[1]
+			cnpjBase := fmt.Sprintf("%014s", cnpj)
+			emp := empresa{CNPJ: cnpjBase}
+
+			if autosInfracao, ok := autoInfracaoIbamaData[cnpjBase]; ok {
+				for _, autoInfracao := range autosInfracao {
+					resultadoAmbiental := models.RESULTAMBIENTAL{
+						CODCONTROLE: fmt.Sprintf("%s-%s-%s", autoInfracao.SeqAutoInfracao, autoInfracao.NumAutoInfracao, autoInfracao.SerAutoInfracao),
+						DATASET:     "IBAMA",
+						TIPO:        "AUTOSINFRACAO",
+						CPFCNPJ:     cnpjBase,
+						NOME:        autoInfracao.NomeInfrator,
+						Data:        autoInfracao.DatHoraAutoInfracao,
+						Municipio:   autoInfracao.Municipio,
+						UF:          autoInfracao.Uf,
+						NumProcesso: autoInfracao.NumProcesso,
+						Descricao:   fmt.Sprintf("Tipo Acao: %s - Valor Multa: %s - Descricao: %s", autoInfracao.TipoAcao, autoInfracao.ValAutoInfracao, autoInfracao.DesInfracao),
+					}
+					emp.Registros = append(emp.Registros, resultadoAmbiental)
+				}
+			}
+
+			if suspensoes, ok := suspensaoIbamaData[cnpjBase]; ok {
+				for _, suspensao := range suspensoes {
+					resultadoAmbiental := models.RESULTAMBIENTAL{
+						CODCONTROLE: fmt.Sprintf("%s-%s-%s", suspensao.SEQ_TAD, suspensao.NUM_TAD, suspensao.SER_TAD),
+						DATASET:     "IBAMA",
+						TIPO:        "SUSPENSAO",
+						CPFCNPJ:     cnpjBase,
+						NOME:        suspensao.NOM_PESSOA_SUSPENSAO,
+						Data:        suspensao.DAT_TAD,
+						Municipio:   suspensao.NOM_MUNICIPIO,
+						UF:          suspensao.SIG_UF,
+						NumProcesso: suspensao.NUM_PROCESSO,
+						Descricao:   fmt.Sprintf("Justificativa: %s - Justificativa: %s", suspensao.DES_JUSTIFICATIVA, suspensao.DES_LOCALIZACAO),
+					}
+					emp.Registros = append(emp.Registros, resultadoAmbiental)
+				}
+			}
+
+			if apreensoes, ok := apreensaoIbamaData[cnpjBase]; ok {
+				for _, apreensao := range apreensoes {
+					resultadoAmbiental := models.RESULTAMBIENTAL{
+						CODCONTROLE: fmt.Sprintf("%s-%s-%s", apreensao.SEQ_TAD, apreensao.NUM_TAD, apreensao.SER_TAD),
+						DATASET:     "IBAMA",
+						TIPO:        "APREENSAO",
+						CPFCNPJ:     cnpjBase,
+						NOME:        apreensao.NOM_PESSOA_SUSPENSAO,
+						Data:        apreensao.DAT_TAD,
+						Municipio:   apreensao.NOM_MUNICIPIO,
+						UF:          apreensao.SIG_UF,
+						NumProcesso: apreensao.NUM_PROCESSO,
+						Descricao:   fmt.Sprintf("Justificativa: %s - Descricao do Local: %s", apreensao.DES_JUSTIFICATIVA, apreensao.DES_LOCALIZACAO),
+					}
+					emp.Registros = append(emp.Registros, resultadoAmbiental)
+				}
+			}
+
+			if areasEmbargadas, ok := areaEmbargadaIbamaData[cnpjBase]; ok {
+				for _, areaEmbargada := range areasEmbargadas {
+					resultadoAmbiental := models.RESULTAMBIENTAL{
+						CODCONTROLE: fmt.Sprintf("%s-%s-%s", areaEmbargada.SEQ_TAD, areaEmbargada.NUM_TAD, areaEmbargada.SER_TAD),
+						DATASET:     "IBAMA",
+						TIPO:        "EMBARGO",
+						CPFCNPJ:     cnpjBase,
+						NOME:        areaEmbargada.NOME_PESSOA_EMBARGADA,
+						Data:        areaEmbargada.DAT_EMBARGO,
+						Municipio:   areaEmbargada.MUNICIPIO,
+						UF:          areaEmbargada.UF,
+						NumProcesso: areaEmbargada.NUM_PROCESSO,
+						Descricao:   fmt.Sprintf("Tipo Acao: %s - Descricao do Local: %s - Descricao: %s | %s ", areaEmbargada.NOME_IMOVEL, areaEmbargada.DES_LOCALIZACAO, areaEmbargada.DES_INFRACAO, areaEmbargada.DES_TAD),
+					}
+					emp.Registros = append(emp.Registros, resultadoAmbiental)
+				}
+			}
+
+			if infracoes, ok := infracaoIbamaData[cnpjBase]; ok {
+				for _, infracao := range infracoes {
+					resultadoAmbiental := models.RESULTAMBIENTAL{
+						CODCONTROLE: fmt.Sprintf("%s-%s-%s", infracao.Numero, infracao.NumeroAI, infracao.SerieAI),
+						DATASET:     "IBAMA",
+						TIPO:        "INFRACAO",
+						CPFCNPJ:     cnpjBase,
+						NOME:        infracao.NomeAutuado,
+						Data:        infracao.DataInfracao,
+						Municipio:   infracao.Municipio,
+						UF:          infracao.Estado,
+						NumProcesso: infracao.NumeroProcesso,
+						Descricao:   fmt.Sprintf("Tipo infracao: %s - Valor Multa: %s - Descricao: %s", infracao.TipoInfracao, infracao.ValorMulta, infracao.SancoesAplicadas),
+					}
+					emp.Registros = append(emp.Registros, resultadoAmbiental)
+				}
+			}
+
+			empresas = append(empresas, emp)
+		}
+	}
+	// Filter empresas slice for companies that have at least one record
+	var empresasWithRecords []empresa
+	for _, emp := range empresas {
+		if len(emp.Registros) > 0 {
+			empresasWithRecords = append(empresasWithRecords, emp)
+		}
+	}
+
+	// create JSON from the empresasWithRecords slice
+	jsonData, err := json.MarshalIndent(empresasWithRecords, "", " ")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// write JSON data to a file only if there is data to write
+	if len(empresasWithRecords) > 0 {
+		err = os.WriteFile("resultAmbiental.json", jsonData, 0644)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+}
+
+func LoadCSVToMemory_AutosInfracaoIbama(filePath string) {
+	file, err := os.Open(filePath)
+	if err != nil {
+		log.Fatal("Unable to read input file ", filePath, err)
+	}
+	defer file.Close()
+
+	csvReader := csv.NewReader(file)
+	csvReader.Comma = ';'
+
+	// Expressão regular para remover todos os caracteres não numéricos
+	re := regexp.MustCompile("[^0-9]+")
+
+	for {
+		record, err := csvReader.Read()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			log.Printf("Error reading AutoInfracaoIbama CSV file: %s", err)
+			continue
+		}
+
+		cleanCPFNPJ := re.ReplaceAllString(record[21], "")
+
+		autoInfracao := models.AutosInfracaoIbama{
+			SeqAutoInfracao:     strings.Trim(record[0], "\""),
+			NumAutoInfracao:     strings.Trim(record[1], "\""),
+			SerAutoInfracao:     strings.Trim(record[2], "\""),
+			TipoAuto:            strings.Trim(record[3], "\""),
+			TipoMulta:           strings.Trim(record[4], "\""),
+			ValAutoInfracao:     strings.Trim(record[5], "\""),
+			PatrimonioApuracao:  strings.Trim(record[6], "\""),
+			GravidadeInfracao:   strings.Trim(record[7], "\""),
+			UnidArrecadacao:     strings.Trim(record[8], "\""),
+			DesAutoInfracao:     strings.Trim(record[9], "\""),
+			DatHoraAutoInfracao: strings.Trim(record[10], "\""),
+			DatCienciaAutuacao:  strings.Trim(record[12], "\""),
+			Municipio:           strings.Trim(record[14], "\""),
+			Uf:                  strings.Trim(record[15], "\""),
+			NumProcesso:         strings.Trim(record[16], "\""),
+			CodInfracao:         strings.Trim(record[17], "\""),
+			DesInfracao:         strings.Trim(record[18], "\""),
+			TipoInfracao:        strings.Trim(record[19], "\""),
+			NomeInfrator:        strings.Trim(record[20], "\""),
+			CpfCnpjInfrator:     cleanCPFNPJ,
+			DesLocalInfracao:    strings.Trim(record[28], "\""),
+			TipoAcao:            strings.Trim(record[32], "\""),
+			Operacao:            strings.Trim(record[33], "\""),
+			DatLancamento:       strings.Trim(record[38], "\""),
+		}
+
+		log.Println("Loading to memory AutoInfracaoIbama ", autoInfracao.SeqAutoInfracao)
+		autoInfracaoIbamaData[cleanCPFNPJ] = append(autoInfracaoIbamaData[cleanCPFNPJ], autoInfracao)
+	}
+}
+
+func LoadCSVToMemory_SuspensaoIbama(filePath string) {
+	file, err := os.Open(filePath)
+	if err != nil {
+		log.Fatalf("Unable to read SuspensaoIbama input file: %s", err)
+	}
+
+	defer file.Close()
+
+	csvReader := csv.NewReader(file)
+	csvReader.Comma = ';'
+
+	// Expressão regular para remover todos os caracteres não numéricos
+	re := regexp.MustCompile("[^0-9]+")
+
+	for {
+		record, err := csvReader.Read()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			log.Println("Error reading SuspensaoIbama CSV file: %s", err)
+			continue
+		}
+
+		cleanCPFNPJ := re.ReplaceAllString(record[9], "")
+
+		suspensaobama := models.SuspensaoIbama{
+			SEQ_TAD:                   strings.Trim(record[0], "\""),
+			STATUS_FORMULARIO:         strings.Trim(record[1], "\""),
+			SIT_CANCELADO:             strings.Trim(record[2], "\""),
+			NUM_TAD:                   strings.Trim(record[3], "\""),
+			SER_TAD:                   strings.Trim(record[4], "\""),
+			DAT_TAD:                   strings.Trim(record[5], "\""),
+			DAT_IMPRESSAO:             strings.Trim(record[6], "\""),
+			NUM_PESSOA_SUSPENSAO:      strings.Trim(record[7], "\""),
+			NOM_PESSOA_SUSPENSAO:      strings.Trim(record[8], "\""),
+			CPF_CNPJ_PESSOA_SUSPENSAO: cleanCPFNPJ,
+			NUM_PROCESSO:              strings.Trim(record[10], "\""),
+			DES_TAD:                   strings.Trim(record[11], "\""),
+			NOM_MUNICIPIO:             strings.Trim(record[13], "\""),
+			SIG_UF:                    strings.Trim(record[14], "\""),
+			DES_LOCALIZACAO:           strings.Trim(record[15], "\""),
+			DES_JUSTIFICATIVA:         strings.Trim(record[18], "\""),
+			UNID_CONTROLE:             strings.Trim(record[21], "\""),
+			SEQ_AUTO_INFRACAO:         strings.Trim(record[22], "\""),
+		}
+
+		log.Println("Loading to memory SuspensaoIbama ", suspensaobama.SEQ_TAD)
+		suspensaoIbamaData[cleanCPFNPJ] = append(suspensaoIbamaData[cleanCPFNPJ], suspensaobama)
+	}
+}
+
+func LoadCSVToMemory_ApreensaoIbama(filePath string) {
+	file, err := os.Open(filePath)
+	if err != nil {
+		log.Fatalf("Unable to read ApreensaoIbama input file: %s", err)
+	}
+
+	defer file.Close()
+
+	csvReader := csv.NewReader(file)
+	csvReader.Comma = ';'
+
+	// Expressão regular para remover todos os caracteres não numéricos
+	re := regexp.MustCompile("[^0-9]+")
+
+	for {
+		record, err := csvReader.Read()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			log.Println("Error reading ApreensaoIbama CSV file: %s", err)
+			continue
+		}
+
+		cleanCPFNPJ := re.ReplaceAllString(record[9], "")
+
+		apreensaoibama := models.ApreensaoIbama{
+			SEQ_TAD:                   record[0],
+			STATUS_FORMULARIO:         record[1],
+			SIT_CANCELADO:             record[2],
+			NUM_TAD:                   record[3],
+			SER_TAD:                   record[4],
+			DAT_TAD:                   record[5],
+			DAT_IMPRESSAO:             record[6],
+			NUM_PESSOA_SUSPENSAO:      record[7],
+			NOM_PESSOA_SUSPENSAO:      record[8],
+			CPF_CNPJ_PESSOA_SUSPENSAO: cleanCPFNPJ,
+			NUM_PROCESSO:              record[10],
+			DES_TAD:                   record[11],
+			NOM_MUNICIPIO:             record[13],
+			SIG_UF:                    record[14],
+			DES_LOCALIZACAO:           record[15],
+			SEQ_AUTO_INFRACAO:         record[21],
+			SEQ_NOTIFICACAO:           record[22],
+		}
+
+		log.Println("Loading to memory ApreensaoIbama ", apreensaoibama.SEQ_TAD)
+		apreensaoIbamaData[cleanCPFNPJ] = append(apreensaoIbamaData[cleanCPFNPJ], apreensaoibama)
+	}
+}
+
+func LoadCSVToMemory_AreaEmbargadaIbama(filePath string) {
+	file, err := os.Open(filePath)
+	if err != nil {
+		log.Fatalf("Unable to read AreaEmbargadaIbama input file: %s", err)
+	}
+
+	defer file.Close()
+
+	csvReader := csv.NewReader(file)
+	csvReader.Comma = ',' // Note o ajuste do delimitador para ',' de acordo com seu arquivo CSV.
+
+	re := regexp.MustCompile("[^0-9]+")
+
+	for {
+		record, err := csvReader.Read()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			log.Fatalf("Error reading AreaEmbargadaIbama CSV file: %s", err)
+			return
+		}
+
+		cleanCPF := re.ReplaceAllString(record[7], "")
+
+		areaEmbargadaIbama := models.AreaEmbargadaIbama{
+			SEQ_TAD:               strings.Trim(record[0], "\""),
+			NUM_TAD:               strings.Trim(record[1], "\""),
+			SER_TAD:               strings.Trim(record[2], "\""),
+			DAT_EMBARGO:           strings.Trim(record[3], "\""),
+			DAT_IMPRESSAO:         strings.Trim(record[4], "\""),
+			NOME_PESSOA_EMBARGADA: strings.Trim(record[6], "\""),
+			CPF_CNPJ_EMBARGADO:    cleanCPF,
+			NUM_PROCESSO:          strings.Trim(record[8], "\""),
+			DES_TAD:               strings.Trim(record[9], "\""),
+			COD_MUNICIPIO:         strings.Trim(record[10], "\""),
+			MUNICIPIO:             strings.Trim(record[11], "\""),
+			UF:                    strings.Trim(record[13], "\""),
+			DES_LOCALIZACAO:       strings.Trim(record[14], "\""),
+			QTD_AREA_EMBARGADA:    strings.Trim(record[19], "\""),
+			NOME_IMOVEL:           strings.Trim(record[20], "\""),
+			SIT_DESMATAMENTO:      strings.Trim(record[21], "\""),
+			NUM_AUTO_INFRACAO:     strings.Trim(record[24], "\""),
+			SER_AUTO_INFRACAO:     strings.Trim(record[25], "\""),
+			QTD_AREA_DESMATADA:    strings.Trim(record[26], "\""),
+			DES_INFRACAO:          strings.Trim(record[27], "\""),
+			COD_TIPO_BIOMA:        strings.Trim(record[28], "\""),
+			DES_TIPO_BIOMA:        strings.Trim(record[29], "\""),
+		}
+
+		log.Println("Loading to memory AreaEmbargadaIbama ", areaEmbargadaIbama.SEQ_TAD)
+		areaEmbargadaIbamaData[cleanCPF] = append(areaEmbargadaIbamaData[cleanCPF], areaEmbargadaIbama)
+	}
+}
+
+func LoadCSVToMemory_InfracaoIbama(filePath string) {
+	file, err := os.Open(filePath)
+	if err != nil {
+		log.Fatalf("Unable to read InfracaoIbama input file: %s", err)
+	}
+
+	defer file.Close()
+
+	csvReader := csv.NewReader(file)
+	csvReader.Comma = ','
+
+	// Expressão regular para remover todos os caracteres não numéricos
+	re := regexp.MustCompile("[^0-9]+")
+
+	for {
+		record, err := csvReader.Read()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			log.Fatalf("Error reading InfracaoIbama CSV file: %s", err)
+			return
+		}
+
+		cleanCPF := re.ReplaceAllString(record[6], "")
+
+		infracaoIbama := models.InfracaoIbama{
+			Numero:           strings.Trim(record[0], "\""),
+			TipoInfracao:     strings.Trim(record[1], "\""),
+			DataInfracao:     strings.Trim(record[2], "\""),
+			Bioma:            strings.Trim(record[3], "\""),
+			Estado:           strings.Trim(record[4], "\""),
+			Municipio:        strings.Trim(record[5], "\""),
+			CPFouCNPJ:        cleanCPF,
+			NomeAutuado:      strings.Trim(record[7], "\""),
+			NumeroAI:         strings.Trim(record[8], "\""),
+			SerieAI:          strings.Trim(record[9], "\""),
+			ValorMulta:       strings.Trim(record[10], "\""),
+			NumeroProcesso:   strings.Trim(record[11], "\""),
+			StatusDebito:     strings.Trim(record[12], "\""),
+			SancoesAplicadas: strings.Trim(record[13], "\""),
+		}
+
+		log.Println("Loading to memory InfracaoIbama ", infracaoIbama.Numero)
+		infracaoIbamaData[cleanCPF] = append(infracaoIbamaData[cleanCPF], infracaoIbama)
+	}
+}
+
+func LoadAllCSVsIbama(dirPath string) {
+
+	files, err := os.ReadDir(dirPath)
+	if err != nil {
+		log.Fatal(err)
+	}
+	var wg sync.WaitGroup
+	for _, file := range files {
+		fileName := strings.ToLower(file.Name())
+		if filepath.Ext(file.Name()) == ".csv" && !strings.HasPrefix(fileName, "planilha") {
+			wg.Add(1)
+			go func(file os.DirEntry) {
+				defer wg.Done()
+				filePath := filepath.Join(dirPath, file.Name())
+				fileName := strings.ToLower(file.Name())
+				switch {
+				case strings.Contains(fileName, "auto_infracao_ibama"):
+					LoadCSVToMemory_AutosInfracaoIbama(filePath)
+				case strings.Contains(fileName, "suspensaobama"):
+					LoadCSVToMemory_SuspensaoIbama(filePath)
+				case strings.Contains(fileName, "apreensao"):
+					LoadCSVToMemory_ApreensaoIbama(filePath)
+				case strings.Contains(fileName, "embargadas"):
+					LoadCSVToMemory_AreaEmbargadaIbama(filePath)
+				default:
+					log.Printf("No suitable function for the file %s", filePath)
+				}
+			}(file)
+		}
+	}
+	wg.Wait()
+
+	for _, file := range files {
+		fileName := strings.ToLower(file.Name())
+		if filepath.Ext(file.Name()) == ".csv" && strings.HasPrefix(fileName, "planilha") {
+			filePath := filepath.Join(dirPath, file.Name())
+			LoadCSVToMemory_InfracaoIbama(filePath)
+		}
+	}
+}
+
+func LoadCSVToMemory_AutosInfracaoICMBIO(filePath string) {
+	file, err := os.Open(filePath)
+	if err != nil {
+		log.Fatalf("Unable to read AutosInfracaoICMBIO input file: %s", err)
+	}
+
+	defer file.Close()
+
+	csvReader := csv.NewReader(file)
+	csvReader.Comma = ';'
+
+	// Expressão regular para remover todos os caracteres não numéricos
+	re := regexp.MustCompile("[^0-9]+")
+
+	for {
+		record, err := csvReader.Read()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			log.Fatalf("Error reading AutosInfracaoICMBIO CSV file: %s", err)
+			return
+		}
+
+		cleanCPF := re.ReplaceAllString(record[9], "")
+
+		autoInfracao := models.AutosInfracaoICMBIO{
+			UUID:             uuid.NewString(),
+			ID:               strings.Trim(record[0], "\""),
+			NumeroAI:         strings.Trim(record[1], "\""),
+			Serie:            strings.Trim(record[2], "\""),
+			Origem:           strings.Trim(record[3], "\""),
+			Tipo:             strings.Trim(record[4], "\""),
+			ValorMulta:       strings.Trim(record[5], "\""),
+			Embargo:          strings.Trim(record[6], "\""),
+			Apreensao:        strings.Trim(record[7], "\""),
+			Autuado:          strings.Trim(record[8], "\""),
+			CPFCNPJ:          cleanCPF,
+			DescricaoAI:      strings.Trim(record[10], "\""),
+			DescricaoSancoes: strings.Trim(record[11], "\""),
+			Data:             strings.Trim(record[12], "\""),
+			Ano:              strings.Trim(record[13], "\""),
+			Artigo1:          strings.Trim(record[14], "\""),
+			Artigo2:          strings.Trim(record[15], "\""),
+			TipoInfracao:     strings.Trim(record[16], "\""),
+			NomeUC:           strings.Trim(record[17], "\""),
+			CNUC:             strings.Trim(record[18], "\""),
+			Municipio:        strings.Trim(record[19], "\""),
+			UF:               strings.Trim(record[20], "\""),
+			TermosEmbargo:    strings.Trim(record[21], "\""),
+			TermosApreensao:  strings.Trim(record[22], "\""),
+			Processo:         strings.Trim(record[24], "\""),
+			Julgamento:       strings.Trim(record[25], "\""),
+		}
+
+		log.Println("Loading to memory AutosInfracaoICMBIO ", autoInfracao.ID)
+		autosInfracaoICMBIOData[cleanCPF] = append(autosInfracaoICMBIOData[cleanCPF], autoInfracao)
+	}
+}
+
+func LoadCSVToMemory_EmbargoICMBIO(filePath string) {
+	file, err := os.Open(filePath)
+	if err != nil {
+		log.Fatalf("Unable to read EmbargoICMBIO input file: %s", err)
+	}
+	defer file.Close()
+
+	csvReader := csv.NewReader(file)
+	csvReader.Comma = ';'
+	re := regexp.MustCompile("[^0-9]+")
+
+	for {
+		record, err := csvReader.Read()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			log.Fatalf("Error reading EmbargoICMBIO CSV file: %s", err)
+			return
+		}
+		cleanCPF := re.ReplaceAllString(record[5], "")
+
+		embargo := models.EmbargoICMBIO{
+			ID:                 record[0],
+			NumeroEmbargo:      record[1],
+			Serie:              record[2],
+			Origem:             record[3],
+			NumeroAutoInfracao: record[4],
+			CPFCNPJ:            cleanCPF,
+			Autuado:            record[6],
+			DescricaoInfracao:  record[7],
+			DescricaoSancao:    record[8],
+			Art1:               record[9],
+			Art2:               record[10],
+			TipoInfracao:       record[11],
+			NomeUC:             record[12],
+			CNUC:               record[13],
+			Municipio:          record[14],
+			UF:                 record[15],
+			DataAuto:           record[16],
+			Area:               record[17],
+			NumProcesso:        record[18],
+		}
+
+		log.Printf("Loading to memory EmbargoICMBIO ID: %s, NumeroEmbargo: %s\n", embargo.ID, embargo.NumeroEmbargo)
+		embargoICMBIOData[cleanCPF] = append(embargoICMBIOData[embargo.CPFCNPJ], embargo)
+	}
+
+	log.Println("Loading to memory EmbargoICMBIO has complete.")
+}
+
+func LoadAllCSVsICMBIO(dirPath string) {
+
+	files, err := os.ReadDir(dirPath)
+	if err != nil {
+		log.Fatal(err)
+	}
+	var wg sync.WaitGroup
+	for _, file := range files {
+		if filepath.Ext(file.Name()) == ".csv" {
+			wg.Add(1)
+			go func(file os.DirEntry) {
+				defer wg.Done()
+				filePath := filepath.Join(dirPath, file.Name())
+				fileName := strings.ToLower(file.Name())
+				switch {
+				case strings.Contains(fileName, "autos_infracao_icmbio"):
+					LoadCSVToMemory_AutosInfracaoICMBIO(filePath)
+				case strings.Contains(fileName, "embargos"):
+
+					LoadCSVToMemory_EmbargoICMBIO(filePath)
+				default:
+					log.Printf("No suitable function for the file %s", filePath)
+				}
+			}(file)
+		}
+	}
+	wg.Wait()
+}
+
+func ProcessaInfracoesAmbientaisIcmbio(filePath string) {
+	file, err := os.Open(filePath)
+	if err != nil {
+		log.Println("Unable to read input file ", filePath, ". Error: ", err)
+		return
+	}
+	defer file.Close()
+
+	reader := csv.NewReader(file)
+	reader.Comma = ';'
+	reader.LazyQuotes = true
+	reader.FieldsPerRecord = -1
+
+	isFirstRow := true
+	for {
+		record, err := reader.Read()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			log.Println("Error reading the file records: ", err)
+			continue
+		}
+
+		// Skip the header
+		if isFirstRow {
+			isFirstRow = false
+			continue
+		}
+		if len(record) < 2 {
+			log.Println("Invalid record:", record)
+			continue
+		}
+		tipoPessoa := record[0]
+
+		if tipoPessoa == "PJ" {
+			cnpj := record[1]
+			cnpjBase := fmt.Sprintf("%014s", cnpj)
+			emp := empresa{CNPJ: cnpjBase}
+
+			if autosInfracao, ok := autosInfracaoICMBIOData[cnpjBase]; ok {
+				for _, autoInfracao := range autosInfracao {
+					resultadoAmbiental := models.RESULTAMBIENTAL{
+						CODCONTROLE: fmt.Sprintf("%s-%s-%s", autoInfracao.ID, autoInfracao.NumeroAI, autoInfracao.Serie),
+						DATASET:     "ICMBIO",
+						TIPO:        "AUTOSINFRACAO",
+						CPFCNPJ:     cnpjBase,
+						NOME:        autoInfracao.Autuado,
+						Data:        autoInfracao.Data,
+						Municipio:   autoInfracao.Municipio,
+						UF:          autoInfracao.UF,
+						NumProcesso: autoInfracao.Processo,
+						Descricao:   fmt.Sprintf("Tipo Acao: %s - Valor Multa: %s - Descricao: %s | %s", autoInfracao.TipoInfracao, autoInfracao.ValorMulta, autoInfracao.TipoInfracao, autoInfracao.DescricaoAI),
+					}
+					emp.Registros = append(emp.Registros, resultadoAmbiental)
+				}
+			}
+
+			if areasEmbargadas, ok := embargoICMBIOData[cnpjBase]; ok {
+				for _, areaEmbargada := range areasEmbargadas {
+					resultadoAmbiental := models.RESULTAMBIENTAL{
+						CODCONTROLE: fmt.Sprintf("%s-%s-%s", areaEmbargada.ID, areaEmbargada.NumeroEmbargo, areaEmbargada.Serie),
+						DATASET:     "ICMBIO",
+						TIPO:        "EMBARGO",
+						CPFCNPJ:     cnpjBase,
+						NOME:        areaEmbargada.Autuado,
+						Data:        areaEmbargada.DataAuto,
+						Municipio:   areaEmbargada.Municipio,
+						UF:          areaEmbargada.UF,
+						NumProcesso: areaEmbargada.NumProcesso,
+						Descricao:   fmt.Sprintf("Tipo Acao: %s  - Descricao: %s | %s ", areaEmbargada.TipoInfracao, areaEmbargada.DescricaoInfracao, areaEmbargada.DescricaoSancao),
+					}
+					emp.Registros = append(emp.Registros, resultadoAmbiental)
+				}
+			}
+
+			empresas = append(empresas, emp)
+		}
+	}
+	// Filter empresas slice for companies that have at least one record
+	var empresasWithRecords []empresa
+	for _, emp := range empresas {
+		if len(emp.Registros) > 0 {
+			empresasWithRecords = append(empresasWithRecords, emp)
+		}
+	}
+
+	// create JSON from the empresasWithRecords slice
+	jsonData, err := json.MarshalIndent(empresasWithRecords, "", " ")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// write JSON data to a file only if there is data to write
+	if len(empresasWithRecords) > 0 {
+		err = os.WriteFile("resultAmbientalICMBio.json", jsonData, 0644)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+}
+
+var aneelData = make(map[string][]models.Aneel)
+
+func LoadCSVToMemory_Aneel() {
+	file, err := os.Open("files/INFRACOES_AMBIENTAIS/ANEEL/ANEEl.csv")
+	if err != nil {
+		log.Fatalf("Unable to read Aneel input file: %s", err)
+	}
+	defer file.Close()
+
+	csvReader := csv.NewReader(file)
+	csvReader.Comma = ';'
+
+	re := regexp.MustCompile("[^0-9]+")
+
+	for {
+		record, err := csvReader.Read()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			log.Fatalf("Error reading Aneel CSV file: %s", err)
+			return
+		}
+
+		cleanCPF := re.ReplaceAllString(record[8], "")
+
+		aneelRecord := models.Aneel{
+			DatGeracaoConjuntoDados:     strings.Trim(record[0], "\""),
+			SigAgenteFiscalizador:       strings.Trim(record[1], "\""),
+			NumAutoInfracao:             strings.Trim(record[2], "\""),
+			DatLavraturaAutoInfracao:    strings.Trim(record[3], "\""),
+			NomNaturezaFiscalizacao:     strings.Trim(record[4], "\""),
+			DscObjetoFiscalizado:        strings.Trim(record[5], "\""),
+			CodObjetoFiscalizado:        strings.Trim(record[6], "\""),
+			NomAgenteFiscalizado:        strings.Trim(record[7], "\""),
+			NumCPFCNPJAgenteFiscalizado: cleanCPF,
+			NumProcessoPunitivo:         strings.Trim(record[9], "\""),
+			NumProcessoPunitivoANEEL:    strings.Trim(record[10], "\""),
+			DatRecebimentoAutoInfracao:  strings.Trim(record[11], "\""),
+			DscTipoPenalidade:           strings.Trim(record[12], "\""),
+			VlrPenalidade:               strings.Trim(record[13], "\""),
+			DtRecebimentoRecurso:        strings.Trim(record[14], "\""),
+			DatDecisaoJuizo:             strings.Trim(record[15], "\""),
+			DscDecisaoCompletaJuizo:     strings.Trim(record[16], "\""),
+			DscAtoJuizo:                 strings.Trim(record[17], "\""),
+			VlrMultaAposJuizo:           strings.Trim(record[18], "\""),
+			DatDecisaoDiretoria:         strings.Trim(record[19], "\""),
+			DscDecisaoCompletaDiretoria: strings.Trim(record[20], "\""),
+			DscAtoDiretoria:             strings.Trim(record[21], "\""),
+			VlrMultaAposDiretoria:       strings.Trim(record[22], "\""),
+			NumTermoEncerramento:        strings.Trim(record[23], "\""),
+			DatLavraturaTE:              strings.Trim(record[24], "\""),
+			DscEnquadramentoAI:          strings.Trim(record[25], "\""),
+			NumTermoNotificacao:         strings.Trim(record[26], "\""),
+			NumProcessoFiscalizacao:     strings.Trim(record[27], "\""),
+		}
+
+		log.Printf("Loading to memory Aneel Record with NumAutoInfracao %s\n", aneelRecord.NumAutoInfracao)
+		aneelData[cleanCPF] = append(aneelData[cleanCPF], aneelRecord)
+	}
+	log.Println("Loading to memory Aneel has complete.")
+}
+
+func ProcessaInfracoesAmbientaisAneel(filePath string) {
+	file, err := os.Open(filePath)
+	if err != nil {
+		log.Println("Unable to read input file ", filePath, ". Error: ", err)
+		return
+	}
+	defer file.Close()
+
+	reader := csv.NewReader(file)
+	reader.Comma = ';'
+	reader.LazyQuotes = true
+	reader.FieldsPerRecord = -1
+
+	isFirstRow := true
+	for {
+		record, err := reader.Read()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			log.Println("Error reading the file records: ", err)
+			continue
+		}
+
+		// Skip the header
+		if isFirstRow {
+			isFirstRow = false
+			continue
+		}
+		if len(record) < 2 {
+			log.Println("Invalid record:", record)
+			continue
+		}
+		tipoPessoa := record[0]
+
+		if tipoPessoa == "PJ" {
+			cnpj := record[1]
+			cnpjBase := fmt.Sprintf("%014s", cnpj)
+			emp := empresa{CNPJ: cnpjBase}
+
+			if autosInfracaoAneel, ok := aneelData[cnpjBase]; ok {
+				for _, autoInfracao := range autosInfracaoAneel {
+					resultadoAmbiental := models.RESULTAMBIENTAL{
+						CODCONTROLE: fmt.Sprintf("%s-%s-%s", autoInfracao.NumAutoInfracao, autoInfracao.SigAgenteFiscalizador, autoInfracao.CodObjetoFiscalizado),
+						DATASET:     "ANEEL",
+						TIPO:        "INFRACAO",
+						CPFCNPJ:     cnpjBase,
+						NOME:        autoInfracao.NomAgenteFiscalizado,
+						Data:        autoInfracao.DatLavraturaAutoInfracao,
+						Municipio:   "",
+						UF:          "",
+						NumProcesso: autoInfracao.NumProcessoFiscalizacao,
+						Descricao:   fmt.Sprintf("Tipo penalidade: %s - Valor Multa: %s - Descricao: %s | %s", autoInfracao.DscTipoPenalidade, autoInfracao.VlrPenalidade, autoInfracao.DscDecisaoCompletaJuizo, autoInfracao.DscTipoPenalidade),
+					}
+					emp.Registros = append(emp.Registros, resultadoAmbiental)
+				}
+			}
+		}
+
+	}
+	// Filter empresas slice for companies that have at least one record
+	var empresasWithRecords []empresa
+	for _, emp := range empresas {
+		if len(emp.Registros) > 0 {
+			empresasWithRecords = append(empresasWithRecords, emp)
+		}
+	}
+
+	// create JSON from the empresasWithRecords slice
+	jsonData, err := json.MarshalIndent(empresasWithRecords, "", " ")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// write JSON data to a file only if there is data to write
+	if len(empresasWithRecords) > 0 {
+		err = os.WriteFile("resultAmbientalAneel.json", jsonData, 0644)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+}

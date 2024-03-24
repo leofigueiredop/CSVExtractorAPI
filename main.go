@@ -22,15 +22,25 @@ func main() {
 	log.SetOutput(mw)
 
 	// Carregue todos os arquivos CSV relacionados na memória
-	//services.LoadAllCSVs("files")
+	//services.LoadAllCSVsIbama("files")
 
 	// Carregue o arquivo "Cadastro Básico" CSV na memória e gere o arquivo JSON
 	//outputJSONFilePath := "resultEmpresas.json"
 	//services.LoadCSVToMemory_CB_JSON("files/AILOSDB/BASE_AILOS.csv", outputJSONFilePath)
 
-	services.LoadAll("files/AILOSDB/BASE_AILOS.csv")
+	//gera resulta empresa
+	//services.LoadAll("files/AILOSDB/BASE_AILOS.csv")
+	//
+	//services.ExportJSON("resultEmpresas.json")
 
-	services.ExportJSON("resultEmpresas.json")
+	//services.LoadAllCSVs("files/ANP")
+	//services.ProcessaAnpAtt("files/AILOSDB/BASE_AILOS.csv")
+
+	//services.LoadAllCSVs_EMP_REG("files/EMP_ATIVIDADES_REG")
+	//services.ProcessarAutorizacaoEspecial("files/AILOSDB/BASE_AILOS.csv")
+
+	services.LoadAllCSVs_Fraude("files/FRAUDE_CORRUPT")
+	services.ProcessarFraude("files/AILOSDB/BASE_AILOS.csv")
 
 	log.Println("FINALIZOU")
 
