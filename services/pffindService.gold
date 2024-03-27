@@ -1,0 +1,145 @@
+package services
+
+import (
+	"encoding/csv"
+	"encoding/json"
+	"fmt"
+	"io"
+	"log"
+	"os"
+	"regexp"
+)
+
+type pf struct {
+	CPF  string
+	File string
+	Line int
+}
+
+var pessoasFisicas = make(map[string]pf)
+
+func check(e error) {
+	if e != nil {
+		panic(e)
+	}
+}
+
+func readCsvFile(file *os.File, separator rune) ([][]string, error) {
+	r := csv.NewReader(file)
+	r.Comma = separator
+	return r.ReadAll()
+}
+
+func BuscaPF_CSV(directoryPath string, filepath string) {
+
+	files, err := os.ReadDir(directoryPath)
+	check(err)
+	cpfRegex := regexp.MustCompile(`\d{3}\.?\d{3}\.?\d{3}-?\d{2}`)
+
+	for _, file := range files {
+		fmt.Println(file.Name())
+		// try to open and read the csv file
+		csvFile, err := os.Open(directoryPath + "/" + file.Name())
+		check(err)
+		defer csvFile.Close()
+
+		// try to read with comma as separator
+		records, err := readCsvFile(csvFile, ',')
+		if err != nil {
+			// if error, try to read with semicolon as separator
+			csvFile.Seek(0, 0) // seek to beginning of file
+			records, err = readCsvFile(csvFile, ';')
+		}
+		check(err)
+
+		for i, record := range records {
+			for _, rec := range record {
+				if cpfRegex.MatchString(rec) {
+					rec = fmt.Sprintf("%011s", rec) // Ensure CPF is of 11 digits.
+
+					// skip line if CPF is not valid
+					if len(rec) != 11 {
+						fmt.Printf("Invalid CPF on File: %s, Line: %d, CPF: %s \n", file.Name(), i+1, rec)
+						continue
+					}
+
+					fmt.Printf("File: %s, Line: %d, CPF: %s \n", file.Name(), i+1, rec)
+					resultPf := pf{
+						File: file.Name(),
+						Line: i + 1,
+						CPF:  rec}
+					pessoasFisicas[resultPf.CPF] = resultPf
+				}
+			}
+		}
+	}
+
+	BuscaPessoaFisica(filepath, pessoasFisicas)
+}
+
+func BuscaPessoaFisica(filePath string, pessoasFisicasMap map[string]pf) {
+	file, err := os.Open(filePath)
+	if err != nil {
+		log.Println("Unable to read input file ", filePath, ". Error: ", err)
+		return
+	}
+	defer file.Close()
+
+	reader := csv.NewReader(file)
+	reader.Comma = ';'
+	reader.LazyQuotes = true
+	reader.FieldsPerRecord = -1
+
+	isFirstRow := true
+	var finalPFs []pf
+	for {
+		// Read each record from csv
+		record, err := reader.Read()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			log.Println("Error reading the file records: ", err)
+			continue
+		}
+		// Skip the header
+		if isFirstRow {
+			isFirstRow = false
+			continue
+		}
+		tipoPessoa := record[0]
+		if tipoPessoa == "PF" {
+			cpf := record[1]                     // Modify this index according to your csv structure
+			cpfBase := fmt.Sprintf("%011d", cpf) // Format the cpf to ensure it has 11 digits with leading zeros too.
+
+			// check if cpfBase exists within pessoasFisicasMap
+			if _, ok := pessoasFisicasMap[cpfBase]; ok {
+				pessoa := pf{CPF: cpfBase}
+				finalPFs = append(finalPFs, pessoa)
+			}
+		}
+	}
+
+	// Filter pessoasFisicasMap slice for companies that have at least one record
+	var finalPFsWithRecords []pf
+	for _, pfData := range finalPFs {
+		if len(pfData.CPF) > 0 {
+			finalPFsWithRecords = append(finalPFsWithRecords, pfData)
+		}
+	}
+
+	// Create JSON from the finalPFsWithRecords slice
+	jsonData, err := json.MarshalIndent(finalPFsWithRecords, "", " ")
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+
+	// Write JSON data to a file only if there is data to write
+	if len(finalPFsWithRecords) > 0 {
+		err = os.WriteFile("finalPFsWithRecords.json", jsonData, 0644)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+}

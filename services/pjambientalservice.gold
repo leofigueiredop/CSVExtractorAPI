@@ -27,7 +27,7 @@ var (
 )
 
 type empresa struct {
-	CNPJ      string                   `json:"cnpj"`
+	CPFCNPJ   string                   `json:"cnpj"`
 	Registros []models.RESULTAMBIENTAL `json:"registros"`
 }
 
@@ -68,10 +68,10 @@ func ProcessaInfracoesAmbientaisIbama(filePath string) {
 		}
 		tipoPessoa := record[0]
 
-		if tipoPessoa == "PJ" {
+		if tipoPessoa == "PF" {
 			cnpj := record[1]
-			cnpjBase := fmt.Sprintf("%014s", cnpj)
-			emp := empresa{CNPJ: cnpjBase}
+			cnpjBase := fmt.Sprintf("%011s", cnpj)
+			emp := empresa{CPFCNPJ: cnpjBase}
 
 			if autosInfracao, ok := autoInfracaoIbamaData[cnpjBase]; ok {
 				for _, autoInfracao := range autosInfracao {
@@ -182,7 +182,7 @@ func ProcessaInfracoesAmbientaisIbama(filePath string) {
 
 	// write JSON data to a file only if there is data to write
 	if len(empresasWithRecords) > 0 {
-		err = os.WriteFile("resultAmbiental.json", jsonData, 0644)
+		err = os.WriteFile("PF/resultAmbientalPF.json", jsonData, 0644)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -668,10 +668,10 @@ func ProcessaInfracoesAmbientaisIcmbio(filePath string) {
 		}
 		tipoPessoa := record[0]
 
-		if tipoPessoa == "PJ" {
+		if tipoPessoa == "PF" {
 			cnpj := record[1]
-			cnpjBase := fmt.Sprintf("%014s", cnpj)
-			emp := empresa{CNPJ: cnpjBase}
+			cnpjBase := fmt.Sprintf("%011s", cnpj)
+			emp := empresa{CPFCNPJ: cnpjBase}
 
 			if autosInfracao, ok := autosInfracaoICMBIOData[cnpjBase]; ok {
 				for _, autoInfracao := range autosInfracao {
@@ -728,7 +728,7 @@ func ProcessaInfracoesAmbientaisIcmbio(filePath string) {
 
 	// write JSON data to a file only if there is data to write
 	if len(empresasWithRecords) > 0 {
-		err = os.WriteFile("resultAmbientalICMBio.json", jsonData, 0644)
+		err = os.WriteFile("PF/resultAmbientalICMBio.json", jsonData, 0644)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -836,7 +836,7 @@ func ProcessaInfracoesAmbientaisAneel(filePath string) {
 		if tipoPessoa == "PJ" {
 			cnpj := record[1]
 			cnpjBase := fmt.Sprintf("%014s", cnpj)
-			emp := empresa{CNPJ: cnpjBase}
+			emp := empresa{CPFCNPJ: cnpjBase}
 
 			if autosInfracaoAneel, ok := aneelData[cnpjBase]; ok {
 				for _, autoInfracao := range autosInfracaoAneel {

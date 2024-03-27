@@ -33,15 +33,28 @@ func main() {
 	//
 	//services.ExportJSON("resultEmpresas.json")
 
-	//services.LoadAllCSVs("files/ANP")
-	//services.ProcessaAnpAtt("files/AILOSDB/BASE_AILOS.csv")
+	//services.LoadAllCSVsICMBIO("files/INFRACOES_AMBIENTAIS/ICMBio")
+	//services.LoadAllCSVsIbama("files/INFRACOES_AMBIENTAIS/IBAMA")
+	//services.LoadCSVToMemory_Aneel()
+
+	//services.ProcessaInfracoesAmbientaisIcmbio("files/AILOSDB/BASE_AILOS.csv")
+	//services.ProcessaInfracoesAmbientaisIbama("files/AILOSDB/BASE_AILOS.csv")
+	//services.ProcessaInfracoesAmbientaisAneel("files/AILOSDB/BASE_AILOS.csv")
+
+	//services.LoadAllCSVs_SERPUB("files/INFRACOES_SERPUB")
+	//services.ProcessarPEP("files/AILOSDB/BASE_AILOS.csv")
 
 	//services.LoadAllCSVs_EMP_REG("files/EMP_ATIVIDADES_REG")
 	//services.ProcessarAutorizacaoEspecial("files/AILOSDB/BASE_AILOS.csv")
 
-	services.LoadAllCSVs_Fraude("files/FRAUDE_CORRUPT")
-	services.ProcessarFraude("files/AILOSDB/BASE_AILOS.csv")
+	//services.LoadAllCSVs_Fraude("files/FRAUDE_CORRUPT")
+	//services.ProcessarFraude("files/AILOSDB/BASE_AILOS.csv")
 
+	//services.BuscaPF_CSV("files/INFRACOES_AMBIENTAIS/IBAMA", "files/AILOSDB/BASE_AILOS.csv")
+
+	services.Convert("files/PF/cpsvm", "ultimosScrappsCpfs00h25m.json")
+
+	//services.MatchPepsNames()
 	log.Println("FINALIZOU")
 
 	//log.Fatal(http.ListenAndServe(":8080", nil))

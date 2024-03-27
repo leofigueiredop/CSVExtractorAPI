@@ -11,6 +11,7 @@ type RESULTAMBIENTAL struct {
 	UF          string
 	NumProcesso string
 	Descricao   string
+	NomeAux     string
 }
 
 type AutosInfracaoIbama struct {

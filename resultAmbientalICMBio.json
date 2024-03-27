@@ -1,0 +1,809 @@
+[
+ {
+  "cnpj": "91212057953",
+  "registros": [
+   {
+    "CODCONTROLE": "15921-010848-A",
+    "DATASET": "ICMBIO",
+    "TIPO": "AUTOSINFRACAO",
+    "CPFCNPJ": "91212057953",
+    "NOME": "Everaldo Maxiano",
+    "Data": "1/8/13",
+    "Municipio": "Tavares",
+    "UF": "RS",
+    "NumProcesso": "02237.000002/2013-83",
+    "Descricao": "Tipo Acao: Das Infrações Contra a Fauna - Valor Multa: 2000 - Descricao: Das Infrações Contra a Fauna | Pescar dentro do PARNA da Lagoa do Peixe sem possuir autorização do órgão competente"
+   }
+  ]
+ },
+ {
+  "cnpj": "09740899072",
+  "registros": [
+   {
+    "CODCONTROLE": "25991-028379-B",
+    "DATASET": "ICMBIO",
+    "TIPO": "AUTOSINFRACAO",
+    "CPFCNPJ": "09740899072",
+    "NOME": "Antonio Silvio Jornada Krebs",
+    "Data": "2/28/19",
+    "Municipio": "Laguna",
+    "UF": "SC",
+    "NumProcesso": "02127.000502/2019-58",
+    "Descricao": "Tipo Acao: Das Infrações Contra a Flora - Valor Multa: 5000 - Descricao: Das Infrações Contra a Flora | Impedir a regeneração natural da vegetação natural nativa em APP no interior da APA da Baleia Franca pela manutenção de uma edificação com área de 0,0172 ha e demais intervenções anteriores. Obs: AI lavrado conforme julgamento descrito"
+   },
+   {
+    "CODCONTROLE": "4841-028379-B",
+    "DATASET": "ICMBIO",
+    "TIPO": "EMBARGO",
+    "CPFCNPJ": "09740899072",
+    "NOME": "Antonio Silvio Jornada Krebs",
+    "Data": "2/28/19",
+    "Municipio": "Laguna",
+    "UF": "SC",
+    "NumProcesso": "02127.000502/2019-58",
+    "Descricao": "Tipo Acao: Das Infrações Contra a Flora  - Descricao: Impedir a regeneração natural da vegetação natural nativa em APP no interior da APA da Baleia Franca pela manutenção de uma edificação com área de 0,0172 ha e demais intervenções anteriores. Obs: AI lavrado conforme julgamento descrito | Fica embargada a área objeto deste AI, compreendida entre as coordenadas descritas "
+   }
+  ]
+ },
+ {
+  "cnpj": "63661985949",
+  "registros": [
+   {
+    "CODCONTROLE": "18951-017408-A",
+    "DATASET": "ICMBIO",
+    "TIPO": "AUTOSINFRACAO",
+    "CPFCNPJ": "63661985949",
+    "NOME": "Marcelo Teixeira Pinto",
+    "Data": "8/24/10",
+    "Municipio": "Florianópolis",
+    "UF": "SC",
+    "NumProcesso": " ",
+    "Descricao": "Tipo Acao: Das Infrações Contra a Flora - Valor Multa: 20000 - Descricao: Das Infrações Contra a Flora | Destruir, através de roçada, 12000m² (1,2ha) de vegetação natural em área considerada de preservação permanente (transição de manguezal), no entorno da ESEC de Carijós"
+   },
+   {
+    "CODCONTROLE": "2769-017408-A",
+    "DATASET": "ICMBIO",
+    "TIPO": "EMBARGO",
+    "CPFCNPJ": "63661985949",
+    "NOME": "Marcelo Teixeira Pinto",
+    "Data": "8/24/10",
+    "Municipio": "Florianópolis",
+    "UF": "SC",
+    "NumProcesso": " ",
+    "Descricao": "Tipo Acao: Das Infrações Contra a Flora  - Descricao: Destruir, através de roçada, 12000m² (1,2ha) de vegetação natural em área considerada de preservação permanente (transição de manguezal), no entorno da ESEC de Carijós | Fica embargada a área objeto do presente auto de infração, conforme descrita no documento técnico n°091/2010 - UMC/ICMBio/SC "
+   }
+  ]
+ },
+ {
+  "cnpj": "88943992904",
+  "registros": [
+   {
+    "CODCONTROLE": "15146-008900-A",
+    "DATASET": "ICMBIO",
+    "TIPO": "AUTOSINFRACAO",
+    "CPFCNPJ": "88943992904",
+    "NOME": "Carlos Alberto Gonçalves",
+    "Data": "3/23/14",
+    "Municipio": "Laguna",
+    "UF": "SC",
+    "NumProcesso": "02180.000058/2014-11",
+    "Descricao": "Tipo Acao: Das Infrações Cometidas Exclusivamente em Unidades de Conservação - Valor Multa: 10000 - Descricao: Das Infrações Cometidas Exclusivamente em Unidades de Conservação | Causar dano à APA Baleia Franca pela manutenção de edificação de 0,0051ha (51,90m2), construída em APP (dunas)."
+   },
+   {
+    "CODCONTROLE": "1612-008900-A",
+    "DATASET": "ICMBIO",
+    "TIPO": "EMBARGO",
+    "CPFCNPJ": "88943992904",
+    "NOME": "Carlos Alberto Gonçalves",
+    "Data": "3/23/14",
+    "Municipio": "Laguna",
+    "UF": "SC",
+    "NumProcesso": "02180.000058/2014-11",
+    "Descricao": "Tipo Acao: Das Infrações Cometidas Exclusivamente em Unidades de Conservação  - Descricao: Causar dano à APA Baleia Franca pela manutenção de edificação de 0,0051ha (51,90m2), construída em APP (dunas). | EMBARGO DA ÁREA; INDICAÇÃO DE DEMOLIÇÃO DA EDIFICAÇÃO "
+   }
+  ]
+ },
+ {
+  "cnpj": "48541532968",
+  "registros": [
+   {
+    "CODCONTROLE": "26511-029062-B",
+    "DATASET": "ICMBIO",
+    "TIPO": "AUTOSINFRACAO",
+    "CPFCNPJ": "48541532968",
+    "NOME": "Alzenir Renato Gonçalves",
+    "Data": "3/25/18",
+    "Municipio": "Tavares",
+    "UF": "RS",
+    "NumProcesso": " ",
+    "Descricao": "Tipo Acao: Das Infrações Contra a Fauna - Valor Multa: 5120 - Descricao: Das Infrações Contra a Fauna | Pescar em local proibido, qual seja, interior do PARNA da Lagoa do Peixe."
+   }
+  ]
+ },
+ {
+  "cnpj": "16800931004",
+  "registros": [
+   {
+    "CODCONTROLE": "18955-017416-A",
+    "DATASET": "ICMBIO",
+    "TIPO": "AUTOSINFRACAO",
+    "CPFCNPJ": "16800931004",
+    "NOME": "Valter Roberto de Azevedo de Andrades",
+    "Data": "9/29/11",
+    "Municipio": "Florianópolis",
+    "UF": "SC",
+    "NumProcesso": " ",
+    "Descricao": "Tipo Acao: Das Infrações Contra a Flora - Valor Multa: 150000 - Descricao: Das Infrações Contra a Flora | Destruir 2,5ha de vegetação natural em área considerada de preservação permanente (manguezal restinga estabilizadora de mangue), através de aterro com material exógeno a área no entorno da ESEC Carijós."
+   },
+   {
+    "CODCONTROLE": "2771-017416-A",
+    "DATASET": "ICMBIO",
+    "TIPO": "EMBARGO",
+    "CPFCNPJ": "16800931004",
+    "NOME": "Valter Roberto de Azevedo de Andrades",
+    "Data": "9/29/11",
+    "Municipio": "Florianópolis",
+    "UF": "SC",
+    "NumProcesso": " ",
+    "Descricao": "Tipo Acao: Das Infrações Contra a Flora  - Descricao: Destruir 2,5ha de vegetação natural em área considerada de preservação permanente (manguezal restinga estabilizadora de mangue), através de aterro com material exógeno a área no entorno da ESEC Carijós. | Fica apreendido: 1 trator de esteira fiat AD7B. "
+   }
+  ]
+ },
+ {
+  "cnpj": "01856212955",
+  "registros": [
+   {
+    "CODCONTROLE": "15591-010101-A",
+    "DATASET": "ICMBIO",
+    "TIPO": "AUTOSINFRACAO",
+    "CPFCNPJ": "01856212955",
+    "NOME": "Ademar Prange",
+    "Data": "8/6/11",
+    "Municipio": "Apiúna",
+    "UF": "SC",
+    "NumProcesso": "02179.000007/2011-86",
+    "Descricao": "Tipo Acao: Das Infrações Contra a Fauna - Valor Multa: 14000 - Descricao: Das Infrações Contra a Fauna | Ter em cativeiro 14 espécimes da fauna silvestre sem licença ou autorização"
+   },
+   {
+    "CODCONTROLE": "22113-021779-B",
+    "DATASET": "ICMBIO",
+    "TIPO": "AUTOSINFRACAO",
+    "CPFCNPJ": "01856212955",
+    "NOME": "Ademar Prange",
+    "Data": "7/8/17",
+    "Municipio": "Apiúna",
+    "UF": "SC",
+    "NumProcesso": " ",
+    "Descricao": "Tipo Acao: Das Infrações Cometidas Exclusivamente em Unidades de Conservação - Valor Multa: 1000 - Descricao: Das Infrações Cometidas Exclusivamente em Unidades de Conservação | Penetrar em UC, PARNA da Serra do Itajaí, conduzindo instrumentos próprios para caça."
+   }
+  ]
+ },
+ {
+  "cnpj": "02328203922",
+  "registros": [
+   {
+    "CODCONTROLE": "31622-035649-B",
+    "DATASET": "ICMBIO",
+    "TIPO": "AUTOSINFRACAO",
+    "CPFCNPJ": "02328203922",
+    "NOME": "Sinoê Vaz",
+    "Data": "5/3/13",
+    "Municipio": "Blumenau",
+    "UF": "SC",
+    "NumProcesso": "02179.000017/2013-83",
+    "Descricao": "Tipo Acao: Das Infrações Cometidas Exclusivamente em Unidades de Conservação - Valor Multa: 500 - Descricao: Das Infrações Cometidas Exclusivamente em Unidades de Conservação | Adotar conduta em desacordo com os objetvios e o plano de manejo da UC, fazendo uso de fogo e consumindo bebida alcoólica às margens do Ribeirão Garcia, no interior do PARNA Serra do Itajaí"
+   }
+  ]
+ },
+ {
+  "cnpj": "06508084950",
+  "registros": [
+   {
+    "CODCONTROLE": "21194-020703-B",
+    "DATASET": "ICMBIO",
+    "TIPO": "AUTOSINFRACAO",
+    "CPFCNPJ": "06508084950",
+    "NOME": "Everton Baumgartner",
+    "Data": "4/18/18",
+    "Municipio": "Guabiruba",
+    "UF": "SC",
+    "NumProcesso": "02127.001050/2018-41",
+    "Descricao": "Tipo Acao: Das Infrações Relativas à Poluição e outras Infrações Ambientais - Valor Multa: 10000 - Descricao: Das Infrações Relativas à Poluição e outras Infrações Ambientais | Construir via de acesso à imóvel por meio da execução de obras de terraplanagem (incluindo a construção de bueiro e fontilhão de madeira/concreto) na Z.A. do PARNA da Serra do Itajaí, sem autorização, em responsabilidade solidária ao ilícito"
+   }
+  ]
+ },
+ {
+  "cnpj": "29438942904",
+  "registros": [
+   {
+    "CODCONTROLE": "15597-010107-A",
+    "DATASET": "ICMBIO",
+    "TIPO": "AUTOSINFRACAO",
+    "CPFCNPJ": "29438942904",
+    "NOME": "Alceu Albertinho Girardi",
+    "Data": "9/15/11",
+    "Municipio": "Indaial",
+    "UF": "SC",
+    "NumProcesso": "02179.000011/2011-44",
+    "Descricao": "Tipo Acao: Das Infrações Cometidas Exclusivamente em Unidades de Conservação - Valor Multa: 3000 - Descricao: Das Infrações Cometidas Exclusivamente em Unidades de Conservação | Adotar conduta em desacordo com os objetivos e plano de manejo da UC, ao contruir edifício e pontilhão, sem licença ou autorização do órgão gestor competente"
+   },
+   {
+    "CODCONTROLE": "21208-020711-B",
+    "DATASET": "ICMBIO",
+    "TIPO": "AUTOSINFRACAO",
+    "CPFCNPJ": "29438942904",
+    "NOME": "Alceu Albertinho Girardi",
+    "Data": "6/28/18",
+    "Municipio": "Indaial",
+    "UF": "SC",
+    "NumProcesso": "02127.001681/2018-60",
+    "Descricao": "Tipo Acao: Das Infrações Contra a Flora - Valor Multa: 14000 - Descricao: Das Infrações Contra a Flora | Destruir remanescentes de vegetação nativa em estágio médio de regeneração da mata atlântica, em uma área de 87,40m² dentro dos limites do PARNA da Serra do Itajaí, não passível de autorização para supressão ou exploração."
+   },
+   {
+    "CODCONTROLE": "21209-020712-B",
+    "DATASET": "ICMBIO",
+    "TIPO": "AUTOSINFRACAO",
+    "CPFCNPJ": "29438942904",
+    "NOME": "Alceu Albertinho Girardi",
+    "Data": "6/28/18",
+    "Municipio": "Indaial",
+    "UF": "SC",
+    "NumProcesso": "02127.001688/2018-81",
+    "Descricao": "Tipo Acao: Das Infrações Contra a Flora - Valor Multa: 15000 - Descricao: Das Infrações Contra a Flora | Destruir remanescentes de vegetação nativa da Mata Atlântica em uma área de 840m², com uso de fogo em APP (Ribierão Encano), dentro dos limites do PARNA da Serra do Itajaí e em sua zona de amortecimento, sem autorização do órgão competente."
+   },
+   {
+    "CODCONTROLE": "1814-010107-A",
+    "DATASET": "ICMBIO",
+    "TIPO": "EMBARGO",
+    "CPFCNPJ": "29438942904",
+    "NOME": "Alceu Albertinho Girardi",
+    "Data": "9/15/11",
+    "Municipio": "Indaial",
+    "UF": "SC",
+    "NumProcesso": "02179.000011/2011-44",
+    "Descricao": "Tipo Acao: Das Infrações Cometidas Exclusivamente em Unidades de Conservação  - Descricao: Adotar conduta em desacordo com os objetivos e plano de manejo da UC, ao contruir edifício e pontilhão, sem licença ou autorização do órgão gestor competente | Embargo do rancho de madeira de 54 m² e o pontilhão de madeira de 25 metros e comprimento, sendo proibido qualquer atividades à vegetação, solo, fauna silvestre ou aos recursos hídricos "
+   },
+   {
+    "CODCONTROLE": "3471-020711-B",
+    "DATASET": "ICMBIO",
+    "TIPO": "EMBARGO",
+    "CPFCNPJ": "29438942904",
+    "NOME": "Alceu Albertinho Girardi",
+    "Data": "6/28/18",
+    "Municipio": "Indaial",
+    "UF": "SC",
+    "NumProcesso": "02127.001681/2018-60",
+    "Descricao": "Tipo Acao: Das Infrações Contra a Flora  - Descricao: Destruir remanescentes de vegetação nativa em estágio médio de regeneração da mata atlântica, em uma área de 87,40m² dentro dos limites do PARNA da Serra do Itajaí, não passível de autorização para supressão ou exploração. | Fica embargada a área de 87,40m² limitadas pelas coordenadas informadas a seguir, ficando proibidas obras, edificações ou quaisquer atividades que causem danos à vegetação, ao solo, à fauna e aos recursos hídricos. "
+   },
+   {
+    "CODCONTROLE": "3472-020712-B",
+    "DATASET": "ICMBIO",
+    "TIPO": "EMBARGO",
+    "CPFCNPJ": "29438942904",
+    "NOME": "Alceu Albertinho Girardi",
+    "Data": "6/28/18",
+    "Municipio": "Indaial",
+    "UF": "SC",
+    "NumProcesso": "02127.001688/2018-81",
+    "Descricao": "Tipo Acao: Das Infrações Contra a Flora  - Descricao: Destruir remanescentes de vegetação nativa da Mata Atlântica em uma área de 840m², com uso de fogo em APP (Ribierão Encano), dentro dos limites do PARNA da Serra do Itajaí e em sua zona de amortecimento, sem autorização do órgão competente. | Fica embargada a área total de 840m² limitada pelas 2 poligonais, com coordenadas informadas a seguir, ficando proibidas obras, edificações ou quaisquer atividades que causem danos à vegetação, ao solo, à fauna e aos recursos hídricos. "
+   },
+   {
+    "CODCONTROLE": "3473-020712-B",
+    "DATASET": "ICMBIO",
+    "TIPO": "EMBARGO",
+    "CPFCNPJ": "29438942904",
+    "NOME": "Alceu Albertinho Girardi",
+    "Data": "6/28/18",
+    "Municipio": "Indaial",
+    "UF": "SC",
+    "NumProcesso": "02127.001688/2018-81",
+    "Descricao": "Tipo Acao: Das Infrações Contra a Flora  - Descricao: Destruir remanescentes de vegetação nativa da Mata Atlântica em uma área de 840m², com uso de fogo em APP (Ribierão Encano), dentro dos limites do PARNA da Serra do Itajaí e em sua zona de amortecimento, sem autorização do órgão competente. | Fica embargada a área total de 840m² limitada pelas 2 poligonais, com coordenadas informadas a seguir, ficando proibidas obras, edificações ou quaisquer atividades que causem danos à vegetação, ao solo, à fauna e aos recursos hídricos. "
+   }
+  ]
+ },
+ {
+  "cnpj": "42078300900",
+  "registros": [
+   {
+    "CODCONTROLE": "31623-035650-B",
+    "DATASET": "ICMBIO",
+    "TIPO": "AUTOSINFRACAO",
+    "CPFCNPJ": "42078300900",
+    "NOME": "Osvaldo Miranda",
+    "Data": "6/23/13",
+    "Municipio": "Apiúna",
+    "UF": "SC",
+    "NumProcesso": "02179.000027/2013-19",
+    "Descricao": "Tipo Acao: Das Infrações Cometidas Exclusivamente em Unidades de Conservação - Valor Multa: 2000 - Descricao: Das Infrações Cometidas Exclusivamente em Unidades de Conservação | PENETRAR EM UNIDADE DE CONSERVAÇÃO CONDUZINDO INSTRUMENTOS PRÓPRIOS PARA CALA EM PROPRIEDADE AINDA NÃO INDENIZADA NA LOCALIDADE DE RIBEIRÃO JUNDIÁ/FAXINAL DO BEPE, DENTRO DOS LIMITES DO PARQUE NACIONAL DA SERRA DO ITAJAÍ, SEM LICENÇA DA AUTORIDAD"
+   }
+  ]
+ },
+ {
+  "cnpj": "46814159368",
+  "registros": [
+   {
+    "CODCONTROLE": "20408-019573-B",
+    "DATASET": "ICMBIO",
+    "TIPO": "AUTOSINFRACAO",
+    "CPFCNPJ": "46814159368",
+    "NOME": "Wallace Silva Costa",
+    "Data": "8/1/19",
+    "Municipio": "Tavares",
+    "UF": "RS",
+    "NumProcesso": " ",
+    "Descricao": "Tipo Acao: Das Infrações Contra a Fauna - Valor Multa: 4000 - Descricao: Das Infrações Contra a Fauna | Pescar em local proibido, interior do PARNA da Lagoa do Peixe, 30 kg de peixes diversos, com uso de rede de emalhe."
+   },
+   {
+    "CODCONTROLE": "20410-019574-B",
+    "DATASET": "ICMBIO",
+    "TIPO": "AUTOSINFRACAO",
+    "CPFCNPJ": "46814159368",
+    "NOME": "Wallace Silva Costa",
+    "Data": "8/1/19",
+    "Municipio": "Tavares",
+    "UF": "RS",
+    "NumProcesso": " ",
+    "Descricao": "Tipo Acao: Das Infrações Contra a Fauna - Valor Multa: 2400 - Descricao: Das Infrações Contra a Fauna | Exercer pesca, com uso de rede de emalhe, sem licença do orgão competente, para capturar 30 kg de peixes diversos, no interior do PARNA da Lagoa do Peixe."
+   }
+  ]
+ },
+ {
+  "cnpj": "62683764987",
+  "registros": [
+   {
+    "CODCONTROLE": "15576-010085-A",
+    "DATASET": "ICMBIO",
+    "TIPO": "AUTOSINFRACAO",
+    "CPFCNPJ": "62683764987",
+    "NOME": "Sergio Luiz Lutzow",
+    "Data": "9/12/10",
+    "Municipio": "Blumenau",
+    "UF": "SC",
+    "NumProcesso": "02127.000433/2010-44",
+    "Descricao": "Tipo Acao: Das Infrações Cometidas Exclusivamente em Unidades de Conservação - Valor Multa: 1000 - Descricao: Das Infrações Cometidas Exclusivamente em Unidades de Conservação | Penetrar em UC conduzindo instrumentos para caça"
+   }
+  ]
+ },
+ {
+  "cnpj": "72636076972",
+  "registros": [
+   {
+    "CODCONTROLE": "5008-IMKXWZIV- ",
+    "DATASET": "ICMBIO",
+    "TIPO": "AUTOSINFRACAO",
+    "CPFCNPJ": "72636076972",
+    "NOME": "CRISTIANO BATISTA DA CRUZ",
+    "Data": "2/17/22",
+    "Municipio": "Guabiruba",
+    "UF": "SC",
+    "NumProcesso": "02127000477202216",
+    "Descricao": "Tipo Acao: Das Infrações Administrativas Contra a Administração Ambiental - Valor Multa: 2000 - Descricao: Das Infrações Administrativas Contra a Administração Ambiental | Deixar de atender exigência regulamentar quando devidamente notificado pela autoridade ambiental competente no prazo concedido (Notificação n° 0366-B, de 09/03/2020) visando a adoção de medida de controle para cessar degradação ambiental (remoçu"
+   },
+   {
+    "CODCONTROLE": "32599-036592-A",
+    "DATASET": "ICMBIO",
+    "TIPO": "AUTOSINFRACAO",
+    "CPFCNPJ": "72636076972",
+    "NOME": "Cristiano Batista da Cruz",
+    "Data": "9/18/18",
+    "Municipio": "Guabiruba",
+    "UF": "SC",
+    "NumProcesso": "02127.002536/2018-04",
+    "Descricao": "Tipo Acao: Das Infrações Contra a Flora - Valor Multa: 10000 - Descricao: Das Infrações Contra a Flora | Destruir em uma área de 1.908m² e danificar em uma área de 468,2m² vegetação natural do bioma Mata Atlântica em área considerada APP, dentro dos limites do PARNA Serra do Itajaí, sem autorização do órgão competente."
+   },
+   {
+    "CODCONTROLE": "32600-036593-A",
+    "DATASET": "ICMBIO",
+    "TIPO": "AUTOSINFRACAO",
+    "CPFCNPJ": "72636076972",
+    "NOME": "Cristiano Batista da Cruz",
+    "Data": "9/18/18",
+    "Municipio": "Guabiruba",
+    "UF": "SC",
+    "NumProcesso": "02127.002537/2018-41",
+    "Descricao": "Tipo Acao: Das Infrações Contra a Flora - Valor Multa: 14000 - Descricao: Das Infrações Contra a Flora | Destruir (em uma área de 3.151,6m²) e danificar (em uma área de 1.518,8m²) vegetação nativa em estágio médio de regeneração, bioma Mata Atlântica, dentro dos limites do PARNA da Serra do Itajaí, não passível de autorização para exploraç"
+   },
+   {
+    "CODCONTROLE": "6894-036592-A",
+    "DATASET": "ICMBIO",
+    "TIPO": "EMBARGO",
+    "CPFCNPJ": "72636076972",
+    "NOME": "Cristiano Batista da Cruz",
+    "Data": "9/18/18",
+    "Municipio": "Guabiruba",
+    "UF": "SC",
+    "NumProcesso": "02127.002536/2018-04",
+    "Descricao": "Tipo Acao: Das Infrações Contra a Flora  - Descricao: Destruir em uma área de 1.908m² e danificar em uma área de 468,2m² vegetação natural do bioma Mata Atlântica em área considerada APP, dentro dos limites do PARNA Serra do Itajaí, sem autorização do órgão competente. | Fica embargada área de 2.376,20m2, composta por 6 poligonais. Fica indicada a demolição de um galpão semiaberto, com área aproximada de 81m2, situado em área embargada. "
+   },
+   {
+    "CODCONTROLE": "6895-036592-A",
+    "DATASET": "ICMBIO",
+    "TIPO": "EMBARGO",
+    "CPFCNPJ": "72636076972",
+    "NOME": "Cristiano Batista da Cruz",
+    "Data": "9/18/18",
+    "Municipio": "Guabiruba",
+    "UF": "SC",
+    "NumProcesso": "02127.002536/2018-04",
+    "Descricao": "Tipo Acao: Das Infrações Contra a Flora  - Descricao: Destruir em uma área de 1.908m² e danificar em uma área de 468,2m² vegetação natural do bioma Mata Atlântica em área considerada APP, dentro dos limites do PARNA Serra do Itajaí, sem autorização do órgão competente. | Fica embargada área de 2.376,20m2, composta por 6 poligonais. Fica indicada a demolição de um galpão semiaberto, com área aproximada de 81m2, situado em área embargada. "
+   },
+   {
+    "CODCONTROLE": "6896-036592-A",
+    "DATASET": "ICMBIO",
+    "TIPO": "EMBARGO",
+    "CPFCNPJ": "72636076972",
+    "NOME": "Cristiano Batista da Cruz",
+    "Data": "9/18/18",
+    "Municipio": "Guabiruba",
+    "UF": "SC",
+    "NumProcesso": "02127.002536/2018-04",
+    "Descricao": "Tipo Acao: Das Infrações Contra a Flora  - Descricao: Destruir em uma área de 1.908m² e danificar em uma área de 468,2m² vegetação natural do bioma Mata Atlântica em área considerada APP, dentro dos limites do PARNA Serra do Itajaí, sem autorização do órgão competente. | Fica embargada área de 2.376,20m2, composta por 6 poligonais. Fica indicada a demolição de um galpão semiaberto, com área aproximada de 81m2, situado em área embargada. "
+   },
+   {
+    "CODCONTROLE": "6897-036592-A",
+    "DATASET": "ICMBIO",
+    "TIPO": "EMBARGO",
+    "CPFCNPJ": "72636076972",
+    "NOME": "Cristiano Batista da Cruz",
+    "Data": "9/18/18",
+    "Municipio": "Guabiruba",
+    "UF": "SC",
+    "NumProcesso": "02127.002536/2018-04",
+    "Descricao": "Tipo Acao: Das Infrações Contra a Flora  - Descricao: Destruir em uma área de 1.908m² e danificar em uma área de 468,2m² vegetação natural do bioma Mata Atlântica em área considerada APP, dentro dos limites do PARNA Serra do Itajaí, sem autorização do órgão competente. | Fica embargada área de 2.376,20m2, composta por 6 poligonais. Fica indicada a demolição de um galpão semiaberto, com área aproximada de 81m2, situado em área embargada. "
+   },
+   {
+    "CODCONTROLE": "6898-036592-A",
+    "DATASET": "ICMBIO",
+    "TIPO": "EMBARGO",
+    "CPFCNPJ": "72636076972",
+    "NOME": "Cristiano Batista da Cruz",
+    "Data": "9/18/18",
+    "Municipio": "Guabiruba",
+    "UF": "SC",
+    "NumProcesso": "02127.002536/2018-04",
+    "Descricao": "Tipo Acao: Das Infrações Contra a Flora  - Descricao: Destruir em uma área de 1.908m² e danificar em uma área de 468,2m² vegetação natural do bioma Mata Atlântica em área considerada APP, dentro dos limites do PARNA Serra do Itajaí, sem autorização do órgão competente. | Fica embargada área de 2.376,20m2, composta por 6 poligonais. Fica indicada a demolição de um galpão semiaberto, com área aproximada de 81m2, situado em área embargada. "
+   },
+   {
+    "CODCONTROLE": "6899-036592-A",
+    "DATASET": "ICMBIO",
+    "TIPO": "EMBARGO",
+    "CPFCNPJ": "72636076972",
+    "NOME": "Cristiano Batista da Cruz",
+    "Data": "9/18/18",
+    "Municipio": "Guabiruba",
+    "UF": "SC",
+    "NumProcesso": "02127.002536/2018-04",
+    "Descricao": "Tipo Acao: Das Infrações Contra a Flora  - Descricao: Destruir em uma área de 1.908m² e danificar em uma área de 468,2m² vegetação natural do bioma Mata Atlântica em área considerada APP, dentro dos limites do PARNA Serra do Itajaí, sem autorização do órgão competente. | Fica embargada área de 2.376,20m2, composta por 6 poligonais. Fica indicada a demolição de um galpão semiaberto, com área aproximada de 81m2, situado em área embargada. "
+   },
+   {
+    "CODCONTROLE": "6900-036593-A",
+    "DATASET": "ICMBIO",
+    "TIPO": "EMBARGO",
+    "CPFCNPJ": "72636076972",
+    "NOME": "Cristiano Batista da Cruz",
+    "Data": "9/18/18",
+    "Municipio": "Guabiruba",
+    "UF": "SC",
+    "NumProcesso": "02127.002537/2018-41",
+    "Descricao": "Tipo Acao: Das Infrações Contra a Flora  - Descricao: Destruir (em uma área de 3.151,6m²) e danificar (em uma área de 1.518,8m²) vegetação nativa em estágio médio de regeneração, bioma Mata Atlântica, dentro dos limites do PARNA da Serra do Itajaí, não passível de autorização para exploraç | Fica embargada a área de 4.670,4m² composta por 2 poligonais, ficando impedidas quaisquer atividades que possam causar danos a flora, fauna, solo e paisagem local. "
+   },
+   {
+    "CODCONTROLE": "6901-036593-A",
+    "DATASET": "ICMBIO",
+    "TIPO": "EMBARGO",
+    "CPFCNPJ": "72636076972",
+    "NOME": "Cristiano Batista da Cruz",
+    "Data": "9/18/18",
+    "Municipio": "Guabiruba",
+    "UF": "SC",
+    "NumProcesso": "02127.002537/2018-41",
+    "Descricao": "Tipo Acao: Das Infrações Contra a Flora  - Descricao: Destruir (em uma área de 3.151,6m²) e danificar (em uma área de 1.518,8m²) vegetação nativa em estágio médio de regeneração, bioma Mata Atlântica, dentro dos limites do PARNA da Serra do Itajaí, não passível de autorização para exploraç | Fica embargada a área de 4.670,4m² composta por 2 poligonais, ficando impedidas quaisquer atividades que possam causar danos a flora, fauna, solo e paisagem local. "
+   }
+  ]
+ },
+ {
+  "cnpj": "72940590982",
+  "registros": [
+   {
+    "CODCONTROLE": "7810-TNQ8W0EQ- ",
+    "DATASET": "ICMBIO",
+    "TIPO": "AUTOSINFRACAO",
+    "CPFCNPJ": "72940590982",
+    "NOME": "Daniel Silveira Junior",
+    "Data": "7/23/20",
+    "Municipio": "São Sebastião",
+    "UF": "SP",
+    "NumProcesso": "02126001637202084",
+    "Descricao": "Tipo Acao: Das Infrações Contra a Fauna - Valor Multa: 63400 - Descricao: Das Infrações Contra a Fauna | Pescar, na modalidade de cerco, em local onde a pesca é proibida (interior do Refúgio de Vida Silvestre do Arquipélago de Alcatrazes), entre os dias 12 e 13 de julho de 2019, com a embarcação Carlos Francisco I, conforme dados do Programa Nacional d"
+   }
+  ]
+ },
+ {
+  "cnpj": "90136918972",
+  "registros": [
+   {
+    "CODCONTROLE": "16073-011129-A",
+    "DATASET": "ICMBIO",
+    "TIPO": "AUTOSINFRACAO",
+    "CPFCNPJ": "90136918972",
+    "NOME": "Claudio Dias",
+    "Data": "11/1/09",
+    "Municipio": "Indaial",
+    "UF": "SC",
+    "NumProcesso": " ",
+    "Descricao": "Tipo Acao: Das Infrações Cometidas Exclusivamente em Unidades de Conservação - Valor Multa: 0 - Descricao: Das Infrações Cometidas Exclusivamente em Unidades de Conservação | Penetrar em UC cuja visitação pública de permanência sejam vedadas pelas normas aplicáveis. Percorriam trilhas com \"gaiolas\", veículos adaptados, contrário ao plano de manejo."
+   }
+  ]
+ },
+ {
+  "cnpj": "83803599253",
+  "registros": [
+   {
+    "CODCONTROLE": "23074-023180-A",
+    "DATASET": "ICMBIO",
+    "TIPO": "AUTOSINFRACAO",
+    "CPFCNPJ": "83803599253",
+    "NOME": "Sérjio Benedito dos Reis",
+    "Data": "2/19/11",
+    "Municipio": "São João da Ponta",
+    "UF": "PA",
+    "NumProcesso": " ",
+    "Descricao": "Tipo Acao: Das Infrações Contra a Fauna - Valor Multa: 2200 - Descricao: Das Infrações Contra a Fauna | PESCAR EM PERÍODO PROIBIDO NO INTERIOR DE UC"
+   }
+  ]
+ },
+ {
+  "cnpj": "03099646954",
+  "registros": [
+   {
+    "CODCONTROLE": "19288-017951-A",
+    "DATASET": "ICMBIO",
+    "TIPO": "AUTOSINFRACAO",
+    "CPFCNPJ": "03099646954",
+    "NOME": "Marcelo Machado",
+    "Data": "9/23/13",
+    "Municipio": "Guaratuba",
+    "UF": "PR",
+    "NumProcesso": " ",
+    "Descricao": "Tipo Acao: Das Infrações Contra a Flora - Valor Multa: 240000 - Descricao: Das Infrações Contra a Flora | Cortar 240 árvores (Euterpes edulis), espécie especialmente protegida, sem permissão da autoridade competente, no interior do PARNA de Saint-Hilaire/Lange."
+   },
+   {
+    "CODCONTROLE": "21555-021008-A",
+    "DATASET": "ICMBIO",
+    "TIPO": "AUTOSINFRACAO",
+    "CPFCNPJ": "03099646954",
+    "NOME": "Marcelo Machado",
+    "Data": "9/23/13",
+    "Municipio": "Guaratuba",
+    "UF": "PR",
+    "NumProcesso": " ",
+    "Descricao": "Tipo Acao: Das Infrações Cometidas Exclusivamente em Unidades de Conservação - Valor Multa: 1000 - Descricao: Das Infrações Cometidas Exclusivamente em Unidades de Conservação | Penetrar no Parque Nacional  de Saint Hilaire/Lange conduzindo instrumentos próprios para caça (espingarda, munição), sem licença da autoridade competente."
+   }
+  ]
+ },
+ {
+  "cnpj": "39149080920",
+  "registros": [
+   {
+    "CODCONTROLE": "22717-022624-B",
+    "DATASET": "ICMBIO",
+    "TIPO": "AUTOSINFRACAO",
+    "CPFCNPJ": "39149080920",
+    "NOME": "Zelir Barbacovi",
+    "Data": "9/28/19",
+    "Municipio": "Governardor Celso Ramos",
+    "UF": "SC",
+    "NumProcesso": " ",
+    "Descricao": "Tipo Acao: Das Infrações Contra a Fauna - Valor Multa: 2520 - Descricao: Das Infrações Contra a Fauna | Pescar em local proibido, interior da REBIO Marinha do Arvoredo, 13 kg de peixes diversos."
+   }
+  ]
+ },
+ {
+  "cnpj": "08891502901",
+  "registros": [
+   {
+    "CODCONTROLE": "17127-013514-A",
+    "DATASET": "ICMBIO",
+    "TIPO": "AUTOSINFRACAO",
+    "CPFCNPJ": "08891502901",
+    "NOME": "Alisson Jean Mendes",
+    "Data": "10/26/15",
+    "Municipio": "Matinhos",
+    "UF": "PR",
+    "NumProcesso": "02197.000055/2015-80",
+    "Descricao": "Tipo Acao: Das Infrações Cometidas Exclusivamente em Unidades de Conservação - Valor Multa: 500 - Descricao: Das Infrações Cometidas Exclusivamente em Unidades de Conservação | Realizar atividade (prática de moto-cross) em desacordo com os objetivos do PARNA Saint-Hilaine/Lange e com plano de manejo da APA Estadual de Guaratuba"
+   }
+  ]
+ },
+ {
+  "cnpj": "38415747934",
+  "registros": [
+   {
+    "CODCONTROLE": "15598-010108-A",
+    "DATASET": "ICMBIO",
+    "TIPO": "AUTOSINFRACAO",
+    "CPFCNPJ": "38415747934",
+    "NOME": "Nesio Testoni",
+    "Data": "9/26/11",
+    "Municipio": "Indaial",
+    "UF": "SC",
+    "NumProcesso": "02179.000017/2011-11",
+    "Descricao": "Tipo Acao: Das Infrações Cometidas Exclusivamente em Unidades de Conservação - Valor Multa: 10000 - Descricao: Das Infrações Cometidas Exclusivamente em Unidades de Conservação | Causar dano a UC, efetuando reforma de estrada e de trilhas, corte de vegetação nativa"
+   },
+   {
+    "CODCONTROLE": "1815-010108-A",
+    "DATASET": "ICMBIO",
+    "TIPO": "EMBARGO",
+    "CPFCNPJ": "38415747934",
+    "NOME": "Nesio Testoni",
+    "Data": "9/26/11",
+    "Municipio": "Indaial",
+    "UF": "SC",
+    "NumProcesso": "02179.000017/2011-11",
+    "Descricao": "Tipo Acao: Das Infrações Cometidas Exclusivamente em Unidades de Conservação  - Descricao: Causar dano a UC, efetuando reforma de estrada e de trilhas, corte de vegetação nativa | Embargo da estrada e trilhas com aproximadamente 800 metros de extensão, e uma faixa mínima de 30 metros ao longo das suas margens, ficando proibidas quaisquer atividades que possam causar danos à flora, fauna, solo e à água "
+   }
+  ]
+ },
+ {
+  "cnpj": "48122033920",
+  "registros": [
+   {
+    "CODCONTROLE": "29992-033400-B",
+    "DATASET": "ICMBIO",
+    "TIPO": "AUTOSINFRACAO",
+    "CPFCNPJ": "48122033920",
+    "NOME": "Valcir Correia",
+    "Data": "2/9/21",
+    "Municipio": "Indaial",
+    "UF": "SC",
+    "NumProcesso": "02127.000278/2021-19",
+    "Descricao": "Tipo Acao: Das Infrações Contra a Flora - Valor Multa: 1000 - Descricao: Das Infrações Contra a Flora | Utilizar em vegetação exótica, motoserra sem licença da autoridade ambiental competente, dentro dos limites do PARNA da Serra do Itajaí."
+   }
+  ]
+ },
+ {
+  "cnpj": "48472158934",
+  "registros": [
+   {
+    "CODCONTROLE": "16052-011104-A",
+    "DATASET": "ICMBIO",
+    "TIPO": "AUTOSINFRACAO",
+    "CPFCNPJ": "48472158934",
+    "NOME": "Isair Saul Felippi",
+    "Data": "3/31/13",
+    "Municipio": "Indaial",
+    "UF": "SC",
+    "NumProcesso": " ",
+    "Descricao": "Tipo Acao: Das Infrações Cometidas Exclusivamente em Unidades de Conservação - Valor Multa: 2000 - Descricao: Das Infrações Cometidas Exclusivamente em Unidades de Conservação | Penetrar em UC com instrumentos próprios para a caça"
+   }
+  ]
+ },
+ {
+  "cnpj": "59657871972",
+  "registros": [
+   {
+    "CODCONTROLE": "24230-025713-A",
+    "DATASET": "ICMBIO",
+    "TIPO": "AUTOSINFRACAO",
+    "CPFCNPJ": "59657871972",
+    "NOME": "Ranieri Luis Siquela",
+    "Data": "5/29/14",
+    "Municipio": "Indaial",
+    "UF": "SC",
+    "NumProcesso": " ",
+    "Descricao": "Tipo Acao: Das Infrações Contra a Flora - Valor Multa: 440000 - Descricao: Das Infrações Contra a Flora | IMPEDIR A REGENERAÇÃO NATURAL DE VEGETAÇÃO NATIVA EM APP NO INTERIOR DA UC EM ÁREA DE 43,97 HA"
+   },
+   {
+    "CODCONTROLE": "24231-025714-A",
+    "DATASET": "ICMBIO",
+    "TIPO": "AUTOSINFRACAO",
+    "CPFCNPJ": "59657871972",
+    "NOME": "Ranieri Luis Siquela",
+    "Data": "5/29/14",
+    "Municipio": "Indaial",
+    "UF": "SC",
+    "NumProcesso": "02179.000046/2014-26",
+    "Descricao": "Tipo Acao: Das Infrações Cometidas Exclusivamente em Unidades de Conservação - Valor Multa: 20000 - Descricao: Das Infrações Cometidas Exclusivamente em Unidades de Conservação | INTRODUZIR EM UC ESPÉCIE ALÓCTONE - EUCALIPTO - EM ÁREA DE 8,43 HA"
+   },
+   {
+    "CODCONTROLE": "4302-025713-A",
+    "DATASET": "ICMBIO",
+    "TIPO": "EMBARGO",
+    "CPFCNPJ": "59657871972",
+    "NOME": "Ranieri Luis Siquela",
+    "Data": "5/29/14",
+    "Municipio": "Indaial",
+    "UF": "SC",
+    "NumProcesso": " ",
+    "Descricao": "Tipo Acao: Das Infrações Contra a Flora  - Descricao: IMPEDIR A REGENERAÇÃO NATURAL DE VEGETAÇÃO NATIVA EM APP NO INTERIOR DA UC EM ÁREA DE 43,97 HA | FICA EMBARGADA A ÁREA "
+   },
+   {
+    "CODCONTROLE": "4303-025714-A",
+    "DATASET": "ICMBIO",
+    "TIPO": "EMBARGO",
+    "CPFCNPJ": "59657871972",
+    "NOME": "Ranieri Luis Siquela",
+    "Data": "5/29/14",
+    "Municipio": "Indaial",
+    "UF": "SC",
+    "NumProcesso": "02179.000046/2014-26",
+    "Descricao": "Tipo Acao: Das Infrações Cometidas Exclusivamente em Unidades de Conservação  - Descricao: INTRODUZIR EM UC ESPÉCIE ALÓCTONE - EUCALIPTO - EM ÁREA DE 8,43 HA | FICA EMBARGADA A ÁREA "
+   }
+  ]
+ },
+ {
+  "cnpj": "71205616934",
+  "registros": [
+   {
+    "CODCONTROLE": "1125-47AYCIZ7- ",
+    "DATASET": "ICMBIO",
+    "TIPO": "AUTOSINFRACAO",
+    "CPFCNPJ": "71205616934",
+    "NOME": "MARCOS AURÉLIO KOHLER",
+    "Data": "8/9/22",
+    "Municipio": "Guabiruba",
+    "UF": "SC",
+    "NumProcesso": "02127002396202242",
+    "Descricao": "Tipo Acao: Das Infrações Contra a Flora - Valor Multa: 5000 - Descricao: Das Infrações Contra a Flora | Impedir a regeneração natural de remanescentes de vegetação nativa da Mata Atlântica dentro de unidade de conservação federal (Parque Nacional da Serra do Itajaí) e de sua zona de amortecimento, afetando área de preservação permanente de curso"
+   },
+   {
+    "CODCONTROLE": "10424-EIBI7UYE- ",
+    "DATASET": "ICMBIO",
+    "TIPO": "EMBARGO",
+    "CPFCNPJ": "71205616934",
+    "NOME": "MARCOS AURÉLIO KOHLER",
+    "Data": "8/9/22",
+    "Municipio": "Guabiruba",
+    "UF": "SC",
+    "NumProcesso": "02127002396202242",
+    "Descricao": "Tipo Acao: Das Infrações Contra a Flora  - Descricao: Impedir a regeneração natural de remanescentes de vegetação nativa da Mata Atlântica dentro de unidade de conservação federal (Parque Nacional da Serra do Itajaí) e de sua zona de amortecimento, afetando área de preservação permanente de curso | Impedir a regeneração natural de remanescentes de vegetação nativa da Mata Atlântica dentro de unidade de conservação federal (Parque Nacional da Serra do Itajaí) e de sua zona de amortecimento, afetando área de preservação permanente de curso "
+   }
+  ]
+ },
+ {
+  "cnpj": "71844783987",
+  "registros": [
+   {
+    "CODCONTROLE": "21189-020700-B",
+    "DATASET": "ICMBIO",
+    "TIPO": "AUTOSINFRACAO",
+    "CPFCNPJ": "71844783987",
+    "NOME": "Edson Luiz Rodermel",
+    "Data": "3/27/18",
+    "Municipio": "Guabiruba",
+    "UF": "SC",
+    "NumProcesso": "02127.000832/2018-62",
+    "Descricao": "Tipo Acao: Das Infrações Contra a Flora - Valor Multa: 10000 - Descricao: Das Infrações Contra a Flora | Destruir remanescentes de vegetação nativa em estágio médio de regeneração da mata atlântica, em uma área de 1530,44m², sem autorização da autoridade ambiental competente, na zona de amortecimento do PARNA da Serra do Itajaí."
+   },
+   {
+    "CODCONTROLE": "3457-020700-B",
+    "DATASET": "ICMBIO",
+    "TIPO": "EMBARGO",
+    "CPFCNPJ": "71844783987",
+    "NOME": "Edson Luiz Rodermel",
+    "Data": "3/27/18",
+    "Municipio": "Guabiruba",
+    "UF": "SC",
+    "NumProcesso": "02127.000832/2018-62",
+    "Descricao": "Tipo Acao: Das Infrações Contra a Flora  - Descricao: Destruir remanescentes de vegetação nativa em estágio médio de regeneração da mata atlântica, em uma área de 1530,44m², sem autorização da autoridade ambiental competente, na zona de amortecimento do PARNA da Serra do Itajaí. | Fica embargada a área de 1530,44m² limitada pelas coordenadas informadas à seguir, ficando proibidas obras, edificações ou quaisquer atividades que causem danos à vegetação, ao solo, à fauna. "
+   }
+  ]
+ },
+ {
+  "cnpj": "99438054987",
+  "registros": [
+   {
+    "CODCONTROLE": "5794-LT7MDPS5- ",
+    "DATASET": "ICMBIO",
+    "TIPO": "AUTOSINFRACAO",
+    "CPFCNPJ": "99438054987",
+    "NOME": "ROGERIO BRETZKE",
+    "Data": "10/22/23",
+    "Municipio": "Guabiruba",
+    "UF": "SC",
+    "NumProcesso": "02127003000202365",
+    "Descricao": "Tipo Acao: Das Infrações Cometidas Exclusivamente em Unidades de Conservação - Valor Multa: 1400 - Descricao: Das Infrações Cometidas Exclusivamente em Unidades de Conservação | Penetrar em Unidade de Conservação (Parque Nacional da Serra do Itajaí) conduzindo instrumentos próprios para caça, sem licença da autoridade competente."
+   }
+  ]
+ }
+]
